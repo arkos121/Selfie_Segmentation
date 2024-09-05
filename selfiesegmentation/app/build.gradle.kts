@@ -50,7 +50,7 @@ android {
 }
 
 dependencies {
-
+    implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -69,4 +69,5 @@ dependencies {
     implementation(libs.mlkit.text.recognition) // for text recognition
     implementation(libs.mlkit.face.detection)   // for face detection
     implementation(libs.mlkit.segmentation.selfie)
+    implementation("com.google.mlkit:object-detection:17.0.2")
 }
