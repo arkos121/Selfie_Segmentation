@@ -14,10 +14,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- Permission to read external storage (if needed for accessing saved images) -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
 
     <!-- Permission to write to external storage (if needed for saving images) -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
 
     <!-- Application configuration -->
     <application
