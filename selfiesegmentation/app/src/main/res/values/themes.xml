@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.SelfieSegmentation" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Use AppCompat theme as the base -->
+    <style name="Theme.SelfieSegmentation" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <!-- Ensure AppTheme extends an AppCompat theme -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+    </style>
+
 </resources>
