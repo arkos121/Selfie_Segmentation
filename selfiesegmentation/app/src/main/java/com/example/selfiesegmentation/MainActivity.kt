@@ -1,6 +1,8 @@
 package com.example.selfiesegmentation
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -16,19 +18,14 @@ import com.example.selfiesegmentation.ui.theme.SelfieSegmentationTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            SelfieSegmentationTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+
+        setContentView(R.layout.layout)
+        val readFileButton: Button = findViewById(R.id.button1)
+        readFileButton.setOnClickListener{
+            val filecontent=
         }
-    }
-}
+
+                        }
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
