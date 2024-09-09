@@ -16,7 +16,6 @@ import com.google.mlkit.vision.objects.ObjectDetection
 import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions
 import java.io.IOException
 
-//import android.graphics.Canvas
 class MainActivity : AppCompatActivity() {
     private var loadedBitmap: Bitmap? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,8 +79,6 @@ private fun processImageObjectDetection(bitmap: Bitmap,textView: TextView,imageV
             style = Paint.Style.STROKE
         }
 
-
-
         if(detectedObjects.isEmpty()){
             Toast.makeText(this,"No object detected",Toast.LENGTH_SHORT).show()
               textView.text ="No object detected"}
@@ -100,6 +97,7 @@ private fun processImageObjectDetection(bitmap: Bitmap,textView: TextView,imageV
             textView.append("Object at rect($left, $up, $right, $bottom)\n")
             if(labels.isNotEmpty()){
                 val label = labels[0].text
+                Log.d("ObjectDetection", "Detected label: $label")
                 Toast.makeText(this,"detected label: $label",Toast.LENGTH_SHORT).show()
                 textView.append("Label : label\n")
             }
