@@ -1,30 +1,22 @@
 package com.example.selfiesegmentation
 
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.selfiesegmentation.ui.theme.SelfieSegmentationTheme
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.objects.ObjectDetection
 import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions
 import java.io.IOException
 
+//import android.graphics.Canvas
 class MainActivity : AppCompatActivity() {
     private var loadedBitmap: Bitmap? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,7 +51,7 @@ class MainActivity : AppCompatActivity() {
 
         processImageButton.setOnClickListener{
             if(loadedBitmap!=null){
-                processImageObjectDetection(loadedBitmap!!,textView)
+                processImageObjectDetection(loadedBitmap!!,textView,imageView)
             }else{
                 textView.text = "First load the image"
             }
@@ -67,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-private fun processImageObjectDetection(bitmap: Bitmap,textView: TextView){
+private fun processImageObjectDetection(bitmap: Bitmap,textView: TextView,imageView: ImageView){
     val options = ObjectDetectorOptions.Builder()
         .setDetectorMode(ObjectDetectorOptions.SINGLE_IMAGE_MODE)
         .enableMultipleObjects()
@@ -79,23 +71,40 @@ private fun processImageObjectDetection(bitmap: Bitmap,textView: TextView){
     val inputImage = InputImage.fromBitmap(bitmap,0)
 
     objectdetector.process(inputImage).addOnSuccessListener { detectedObjects->
+
+        val mutableBitMap = bitmap.copy(Bitmap.Config.ARGB_8888,true)
+        val canvas = android.graphics.Canvas(mutableBitMap)
+        val paint = Paint().apply {
+            color = Color.RED
+            strokeWidth = 8f
+            style = Paint.Style.STROKE
+        }
+
+
+
         if(detectedObjects.isEmpty()){
             Toast.makeText(this,"No object detected",Toast.LENGTH_SHORT).show()
               textView.text ="No object detected"}
     else{
         for(obj in detectedObjects){
             val box = obj.boundingBox
-            val trackid = obj.trackingId
+            val left = box.left
+            val right = box.right
+            val bottom = box.bottom
+            val up = box.top
             val labels = obj.labels
 
-            Toast.makeText(this,"Object detected at : $box",Toast.LENGTH_SHORT).show()
-            textView.append("Object at ${obj.boundingBox}\n")
+            canvas.drawRect(box,paint)
+            Toast.makeText(this,"ObjectDetection:Bounding Box: left=$left, up=$up, right=$right, bottom=$bottom",Toast.LENGTH_SHORT).show()
+            Log.d("ObjectDetection", "Bounding Box: left=$left, up=$up, right=$right, bottom=$bottom")
+            textView.append("Object at rect($left, $up, $right, $bottom)\n")
             if(labels.isNotEmpty()){
                 val label = labels[0].text
                 Toast.makeText(this,"detected label: $label",Toast.LENGTH_SHORT).show()
                 textView.append("Label : label\n")
             }
         }
+            imageView.setImageBitmap(mutableBitMap)
     }
 
 }
