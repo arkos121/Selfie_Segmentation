@@ -70,4 +70,5 @@ dependencies {
     implementation(libs.mlkit.face.detection)   // for face detection
     implementation(libs.mlkit.segmentation.selfie)
     implementation("com.google.mlkit:object-detection:17.0.2")
+    implementation("com.google.mlkit:segmentation-selfie:16.0.0-beta6")
 }
