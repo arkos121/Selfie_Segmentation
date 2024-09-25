@@ -149,9 +149,8 @@ fun processImageObjectDetection(bitmap: Bitmap) {
 
         }
 }
-    fun background(resultBitmap: Bitmap,mask: Bitmap,color: Int) {
-
-        val bitmapstore = applySegmentationMask(resultBitmap, mask, color)
+    fun background(bitmap: Bitmap,mask: Bitmap,color: Int) {
+        val bitmapstore = applySegmentationMask(bitmap, mask, color)
         _bitmap.value = bitmapstore
         _statusMessage.value = "Segmentation successful!"
     }
