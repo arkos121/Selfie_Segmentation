@@ -1,5 +1,6 @@
 package com.example.selfiesegmentation
 
+import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -8,6 +9,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import com.example.selfiesegmentation.databinding.LayoutBinding
 import java.io.IOException
 
@@ -23,6 +25,7 @@ private lateinit var binding: LayoutBinding
 
         binding.button1.setOnClickListener {
             loader("photo1.jpg")
+
         }
 
         binding.button2.setOnClickListener {
@@ -59,14 +62,21 @@ private lateinit var binding: LayoutBinding
 
         binding.yellow.setOnClickListener {
             loadedBitmap.let {
-                viewModel.background(it,viewModel.maskBitmap.value!!,Color.YELLOW)
-                showToast("Yellow BackgroundAdded")
+                viewModel.background(it,viewModel.maskBitmap.value!!,viewModel.calculateavgforeground(it,viewModel.maskBitmap.value!!))
+                showToast("COnttrasting color")
             }
         }
+        binding.image.setOnClickListener {
+          loadedBitmap.let{
+              viewModel.setBackground(assets,"damn.jpg")
+              viewModel.applyNewBackground(loadedBitmap,viewModel.maskBitmap.value!!)
+          }
 
+        }
         viewModel.bitmap.observe(this, Observer { bitmap -> binding.imageview.setImageBitmap(bitmap) })
         viewModel.statusMessage.observe(this,Observer{message -> binding.textView.text = message})
         viewModel.maskBitmap.observe(this,Observer{bitmap -> binding.imageview.setImageBitmap(bitmap)})
+        viewModel.backgrounds.observe(this,Observer{bitmap -> binding.imageview.setImageBitmap(bitmap)})
         }
 
     private fun loader(fileName : String){
@@ -76,7 +86,7 @@ val assetManager = this.assets
             val bitmap = BitmapFactory.decodeStream(inputStream)
             inputStream.close()
             binding.imageview.setImageBitmap(bitmap)
-                loadedBitmap = bitmap
+            loadedBitmap = bitmap
 
             binding.textView.text = ""
         }
