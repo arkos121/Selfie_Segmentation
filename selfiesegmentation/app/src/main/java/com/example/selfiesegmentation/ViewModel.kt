@@ -28,7 +28,7 @@ class MainViewModel : ViewModel() {
     val bnwBitmap: LiveData<Bitmap> get() = _bnwBitmap
 
     private val _bitmap = MutableLiveData<Bitmap?>()
-    val bitmap: MutableLiveData<Bitmap?> get() = _bitmap
+    val bitmap: LiveData<Bitmap?> get() = _bitmap
 
     private val _statusMessage = MutableLiveData<String>()
     val statusMessage: LiveData<String> = _statusMessage
@@ -136,7 +136,6 @@ class MainViewModel : ViewModel() {
 //        _bnwBitmap.value = bmp
 //        return bmp
         val newBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, bitmap.config)
-        val image = InputImage.fromBitmap(bitmap, 0)
         for (i in 0 until bitmap.width) {
             for (j in 0 until bitmap.height) {
                 // Get the pixel color
@@ -179,7 +178,6 @@ class MainViewModel : ViewModel() {
         _sepiaBitmap.value = bmp
         return bmp
     }
-
 
     fun processImageObjectDetection(bitmap: Bitmap) {
         val options = ObjectDetectorOptions.Builder()

@@ -1,26 +1,19 @@
 package com.example.selfiesegmentation
 
-import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
-import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.ImageView
-import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import com.example.selfiesegmentation.databinding.LayoutBinding
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
     private lateinit var loadedBitmap : Bitmap
-    private lateinit var imageView: ImageView
+    private lateinit var storedimg : Bitmap
     private val viewModel : MainViewModel by viewModels()
 private lateinit var binding: LayoutBinding
 
@@ -108,14 +101,14 @@ private lateinit var binding: LayoutBinding
 
         }
         binding.bnw.setOnClickListener {
-            loadedBitmap.let {
-                viewModel.applyBlackAndWhiteFilter(it)
+            viewModel.bitmap.value.let {
+                viewModel.applyBlackAndWhiteFilter(it!!)
 
             }
         }
         binding.sepia.setOnClickListener {
-            loadedBitmap.let {
-                viewModel.applySepiaFilter(it)
+            viewModel.bitmap.value.let {
+                viewModel.applySepiaFilter(it!!)
 
             }
         }
@@ -123,11 +116,11 @@ private lateinit var binding: LayoutBinding
         viewModel.statusMessage.observe(this,Observer{message -> binding.textView.text = message})
         viewModel.maskBitmap.observe(this,Observer{bitmap -> binding.imageview.setImageBitmap(bitmap)})
         viewModel.backgrounds.observe(this,Observer{bitmap -> binding.imageview.setImageBitmap(bitmap)})
-        viewModel.bnwBitmap.observe(this, {bitmap -> binding.imageview.setImageBitmap(bitmap)})
-        viewModel.sepiaBitmap.observe(this, {bitmap -> binding.imageview.setImageBitmap(bitmap)})
+        viewModel.bnwBitmap.observe(this, { bitmap -> binding.imageview.setImageBitmap(bitmap) })
+        viewModel.sepiaBitmap.observe(this, { bitmap -> binding.imageview.setImageBitmap(bitmap) })
 
 
-        }
+    }
 
 
 
@@ -139,6 +132,7 @@ val assetManager = this.assets
             inputStream.close()
             binding.imageview.setImageBitmap(bitmap)
             loadedBitmap = bitmap
+            storedimg = bitmap
 
             binding.textView.text = ""
         }
