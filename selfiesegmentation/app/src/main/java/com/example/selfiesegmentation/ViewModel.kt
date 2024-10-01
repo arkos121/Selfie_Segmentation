@@ -15,9 +15,17 @@ import com.google.mlkit.vision.objects.ObjectDetection
 import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions
 import com.google.mlkit.vision.segmentation.Segmentation
 import com.google.mlkit.vision.segmentation.selfie.SelfieSegmenterOptions
+import java.io.InputStream
 import java.nio.ByteBuffer
 
+
 class MainViewModel : ViewModel() {
+
+    private val _sepiaBitmap = MutableLiveData<Bitmap>()
+    val sepiaBitmap: LiveData<Bitmap> get() = _sepiaBitmap
+
+    private val _bnwBitmap = MutableLiveData<Bitmap>()
+    val bnwBitmap: LiveData<Bitmap> get() = _bnwBitmap
 
     private val _bitmap = MutableLiveData<Bitmap?>()
     val bitmap: MutableLiveData<Bitmap?> get() = _bitmap
@@ -107,6 +115,71 @@ class MainViewModel : ViewModel() {
 
         return bitmap
     }
+    fun applyBlackAndWhiteFilter(bitmap: Bitmap): Bitmap {
+//        val bmp = Bitmap.createBitmap(bitmap.width, bitmap.height, bitmap.config)
+//
+//        for (x in 0 until bitmap.width) {
+//            for (y in 0 until bitmap.height) {
+//                val pixel = bitmap.getPixel(x, y)
+//                val red = Color.red(pixel)
+//                val green = Color.green(pixel)
+//                val blue = Color.blue(pixel)
+//
+//                // Calculate grayscale
+//                val gray = (0.3 * red + 0.59 * green + 0.11 * blue).toInt()
+//
+//                // Set the pixel in the new bitmap
+//                val newPixel = Color.rgb(gray, gray, gray)
+//                bmp.setPixel(x, y, newPixel)
+//            }
+//        }
+//        _bnwBitmap.value = bmp
+//        return bmp
+        val newBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, bitmap.config)
+        val image = InputImage.fromBitmap(bitmap, 0)
+        for (i in 0 until bitmap.width) {
+            for (j in 0 until bitmap.height) {
+                // Get the pixel color
+                val pixel = bitmap.getPixel(i, j)
+
+                // Extract the red, green, and blue components
+                val red = Color.red(pixel)
+                val green = Color.green(pixel)
+                val blue = Color.blue(pixel)
+
+                // Compute the grayscale value
+                val gray = (red * 0.3 + green * 0.59 + blue * 0.11).toInt()
+
+                // Set the pixel to the grayscale color
+                newBitmap.setPixel(i, j, Color.rgb(gray, gray, gray))
+            }
+        }
+        _bnwBitmap.value = newBitmap
+        return newBitmap
+    }
+    fun applySepiaFilter(bitmap: Bitmap): Bitmap {
+        val bmp = Bitmap.createBitmap(bitmap.width, bitmap.height, bitmap.config)
+
+        for (x in 0 until bitmap.width) {
+            for (y in 0 until bitmap.height) {
+                val pixel = bitmap.getPixel(x, y)
+                val red = Color.red(pixel)
+                val green = Color.green(pixel)
+                val blue = Color.blue(pixel)
+
+                // Apply sepia transformation
+                val tr = (0.393 * red + 0.769 * green + 0.189 * blue).toInt().coerceIn(0, 255)
+                val tg = (0.349 * red + 0.686 * green + 0.168 * blue).toInt().coerceIn(0, 255)
+                val tb = (0.272 * red + 0.534 * green + 0.131 * blue).toInt().coerceIn(0, 255)
+
+                val newPixel = Color.rgb(tr, tg, tb)
+                bmp.setPixel(x, y, newPixel)
+            }
+        }
+        _sepiaBitmap.value = bmp
+        return bmp
+    }
+
 
     fun processImageObjectDetection(bitmap: Bitmap) {
         val options = ObjectDetectorOptions.Builder()
