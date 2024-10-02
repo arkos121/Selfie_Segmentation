@@ -51,7 +51,7 @@ private lateinit var binding: LayoutBinding
 //        }
 
         binding.button1.setOnClickListener {
-            loader("photo1.jpg")
+            loader("ss.jpeg")
 
         }
 

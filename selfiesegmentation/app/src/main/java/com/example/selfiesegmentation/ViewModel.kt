@@ -192,6 +192,11 @@ class MainViewModel : ViewModel() {
 
         objectdetector.process(inputImage).addOnSuccessListener { detectedObjects ->
 
+            if(detectedObjects.isEmpty()){
+                _statusMessage.value = "ObjectDetection Failed"
+                return@addOnSuccessListener
+            }
+
             objectDetectionCompletes = true
             val mutableBitMap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
             val canvas = android.graphics.Canvas(mutableBitMap)
@@ -219,8 +224,9 @@ class MainViewModel : ViewModel() {
             }
         }
             .addOnFailureListener { e ->
+                Log.d("TAG", "ObjectDetection Failed")
                 e.printStackTrace()
-                _statusMessage.value = "ObjectDetectionFailed"
+                _statusMessage.value = "ObjectDetection has Failed"
 
             }
     }
