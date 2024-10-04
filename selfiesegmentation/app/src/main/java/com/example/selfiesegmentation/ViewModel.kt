@@ -42,6 +42,7 @@ class MainViewModel : ViewModel() {
     private var objectDetectionCompletes = false
 
     fun selfie_segmentation(bitmap: Bitmap) {
+        val startime = System.currentTimeMillis()
         if (objectDetectionCompletes) {
             val options = SelfieSegmenterOptions.Builder()
                 .setDetectorMode(SelfieSegmenterOptions.SINGLE_IMAGE_MODE)
@@ -71,6 +72,8 @@ class MainViewModel : ViewModel() {
         } else {
             _statusMessage.value = "ObjectDetectionFailed"
         }
+        val endtime = System.currentTimeMillis()
+        println("the time taken to remove the background is ${endtime - startime}")
     }
 
 
@@ -116,6 +119,7 @@ class MainViewModel : ViewModel() {
         return bitmap
     }
     fun applyBlackAndWhiteFilter(bitmap: Bitmap): Bitmap {
+
 //        val bmp = Bitmap.createBitmap(bitmap.width, bitmap.height, bitmap.config)
 //
 //        for (x in 0 until bitmap.width) {
@@ -135,6 +139,7 @@ class MainViewModel : ViewModel() {
 //        }
 //        _bnwBitmap.value = bmp
 //        return bmp
+        val startime = System.currentTimeMillis()
         val newBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, bitmap.config)
         for (i in 0 until bitmap.width) {
             for (j in 0 until bitmap.height) {
@@ -154,9 +159,13 @@ class MainViewModel : ViewModel() {
             }
         }
         _bnwBitmap.value = newBitmap
+        val endtime = System.currentTimeMillis()
+        println("the time taken to put the filter is ${endtime - startime}")
         return newBitmap
+
     }
     fun applySepiaFilter(bitmap: Bitmap): Bitmap {
+        val startime = System.currentTimeMillis()
         val bmp = Bitmap.createBitmap(bitmap.width, bitmap.height, bitmap.config)
 
         for (x in 0 until bitmap.width) {
@@ -176,10 +185,13 @@ class MainViewModel : ViewModel() {
             }
         }
         _sepiaBitmap.value = bmp
+        val endtime = System.currentTimeMillis()
+        println("the time taken to put the filter is ${endtime - startime}")
         return bmp
     }
 
     fun processImageObjectDetection(bitmap: Bitmap) {
+        val startime = System.currentTimeMillis()
         val options = ObjectDetectorOptions.Builder()
             .setDetectorMode(ObjectDetectorOptions.SINGLE_IMAGE_MODE)
             .enableMultipleObjects()
@@ -229,12 +241,22 @@ class MainViewModel : ViewModel() {
                 _statusMessage.value = "ObjectDetection has Failed"
 
             }
+        val endtime = System.currentTimeMillis()
+        println("the time taken to detect the object is ${endtime - startime}")
     }
 
     fun background(bitmap: Bitmap, mask: Bitmap, color: Int) {
+        val start = System.currentTimeMillis()
+        if(!objectDetectionCompletes) {
+            Log.d("ButtonClick", "Please click the processed button first")
+            _statusMessage.value = "Please click the processed button first!"
+            return
+        }
         val bitmapstore = applySegmentationMask(bitmap, mask, color)
         _bitmap.value = bitmapstore
         _statusMessage.value = "Segmentation successful!"
+        val end = System.currentTimeMillis()
+        println("the time taken to add color to the background is ${end - start}")
     }
 
     fun calculateavgforeground(original: Bitmap, mask: Bitmap): Int {
@@ -287,10 +309,14 @@ class MainViewModel : ViewModel() {
      }
 }
     fun applyNewBackground(foreground : Bitmap,Mask : Bitmap){
+        val start = System.currentTimeMillis()
         val back = _backgrounds.value?:return
         val resultBitmap = applyImageSegmentationMask(foreground,Mask,back)
         _bitmap.value = resultBitmap
         _statusMessage.value = "Backgorund image added"
+        val endtime = System.currentTimeMillis()
+
+        println("the time taken to add the background image is ${endtime - start}")
     }
 
     private fun applyImageSegmentationMask(original: Bitmap, mask: Bitmap, back: Bitmap): Bitmap? {

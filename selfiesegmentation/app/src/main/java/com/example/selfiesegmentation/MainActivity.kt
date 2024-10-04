@@ -4,11 +4,13 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.selfiesegmentation.databinding.LayoutBinding
+import kotlinx.coroutines.withTimeout
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
@@ -51,7 +53,7 @@ private lateinit var binding: LayoutBinding
 //        }
 
         binding.button1.setOnClickListener {
-            loader("ss.jpeg")
+            loader("photo1.jpg")
 
         }
 
@@ -125,6 +127,7 @@ private lateinit var binding: LayoutBinding
 
 
     private fun loader(fileName : String){
+        val startTime = System.currentTimeMillis()
 val assetManager = this.assets
         try{
             val inputStream = assetManager.open(fileName)
@@ -140,6 +143,9 @@ val assetManager = this.assets
             e.printStackTrace()
             showToast("failed to load image")
         }
+        val endtime = System.currentTimeMillis()
+        val total = endtime - startTime
+        println("the time taken for uploading the image is $total")
     }
 
 private fun showToast(message: String) = Toast.makeText(this,message,Toast.LENGTH_SHORT).show()
