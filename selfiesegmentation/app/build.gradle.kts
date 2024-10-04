@@ -77,6 +77,6 @@ dependencies {
     implementation(libs.mlkit.segmentation.selfie)
     implementation("com.google.mlkit:object-detection:17.0.2")
     implementation("com.google.mlkit:segmentation-selfie:16.0.0-beta6")
-  //  implementation("com.github.alhazmy13.ImageFilters:library:0.1.2-beta")
+
 
 }

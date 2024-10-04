@@ -4,7 +4,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -25,32 +28,36 @@ private lateinit var binding: LayoutBinding
         setContentView(binding.root)
         super.onCreate(savedInstanceState)
         // Store the loaded bitmap here
-//        val spinner:Spinner = findViewById(R.id.dropdown)
-//        val filters = arrayOf("Original", "B&W" , "Sepia")
-//        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, filters)
-//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-//        spinner.adapter = adapter
-//
-//
-//        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-//            override fun onItemSelected(
-//                parent: AdapterView<*>?,
-//                view: View?,
-//                position: Int,
-//                id: Long
-//            ) {
-//                val selectedFilter = filters[position]
-//                when (selectedFilter) {
-//                    "Original" -> imageView.setImageBitmap(loadedBitmap)
-//                    "B&W" -> viewModel.applyBlackAndWhiteFilter(loadedBitmap)
-//                    "Sepia" -> viewModel.applySepiaFilter(loadedBitmap)
-//                }
-//                imageView.setImageBitmap(loadedBitmap)
-//            }
-//            override fun onNothingSelected(parent: AdapterView<*>) {
-//                // Do nothing when no selection is made
-//            }
-//        }
+        val spinner: Spinner = findViewById(R.id.dropdown)
+        val filters = arrayOf("Default" , "Original", "B&W" , "Sepia")
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, filters)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val selectedFilter = filters[position]
+                when (selectedFilter) {
+
+                    "Original" -> loader("photo1.jpg")
+                    "B&W" ->   viewModel.bitmap.value.let {
+                        viewModel.applyBlackAndWhiteFilter(it!!) }
+                    "Sepia" ->   viewModel.bitmap.value.let {
+                        viewModel.applySepiaFilter(it!!)
+                    }
+                }
+            //    imageView.setImageBitmap(loadedBitmap)
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Do nothing when no selection is made
+            }
+        }
 
         binding.button1.setOnClickListener {
             loader("photo1.jpg")
@@ -102,18 +109,7 @@ private lateinit var binding: LayoutBinding
           }
 
         }
-        binding.bnw.setOnClickListener {
-            viewModel.bitmap.value.let {
-                viewModel.applyBlackAndWhiteFilter(it!!)
 
-            }
-        }
-        binding.sepia.setOnClickListener {
-            viewModel.bitmap.value.let {
-                viewModel.applySepiaFilter(it!!)
-
-            }
-        }
         viewModel.bitmap.observe(this, Observer { bitmap -> binding.imageview.setImageBitmap(bitmap) })
         viewModel.statusMessage.observe(this,Observer{message -> binding.textView.text = message})
         viewModel.maskBitmap.observe(this,Observer{bitmap -> binding.imageview.setImageBitmap(bitmap)})

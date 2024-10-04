@@ -119,7 +119,6 @@ class MainViewModel : ViewModel() {
         return bitmap
     }
     fun applyBlackAndWhiteFilter(bitmap: Bitmap): Bitmap {
-
 //        val bmp = Bitmap.createBitmap(bitmap.width, bitmap.height, bitmap.config)
 //
 //        for (x in 0 until bitmap.width) {
@@ -246,17 +245,9 @@ class MainViewModel : ViewModel() {
     }
 
     fun background(bitmap: Bitmap, mask: Bitmap, color: Int) {
-        val start = System.currentTimeMillis()
-        if(!objectDetectionCompletes) {
-            Log.d("ButtonClick", "Please click the processed button first")
-            _statusMessage.value = "Please click the processed button first!"
-            return
-        }
         val bitmapstore = applySegmentationMask(bitmap, mask, color)
         _bitmap.value = bitmapstore
         _statusMessage.value = "Segmentation successful!"
-        val end = System.currentTimeMillis()
-        println("the time taken to add color to the background is ${end - start}")
     }
 
     fun calculateavgforeground(original: Bitmap, mask: Bitmap): Int {
