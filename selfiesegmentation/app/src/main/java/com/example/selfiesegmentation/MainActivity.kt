@@ -45,17 +45,20 @@ private lateinit var binding: LayoutBinding
                 val selectedFilter = filters[position]
                 when (selectedFilter) {
 
-                    "Original" -> loader("photo1.jpg")
+                    "Original" -> if(::storedimg.isInitialized){
+                        binding.imageview.setImageBitmap(storedimg)
+                    }
+                    else{
+                        showToast("No image loaded")
+                    }
                     "B&W" ->   viewModel.bitmap.value.let {
                         viewModel.applyBlackAndWhiteFilter(it!!) }
                     "Sepia" ->   viewModel.bitmap.value.let {
                         viewModel.applySepiaFilter(it!!)
                     }
                 }
-            //    imageView.setImageBitmap(loadedBitmap)
             }
             override fun onNothingSelected(parent: AdapterView<*>) {
-                // Do nothing when no selection is made
             }
         }
 

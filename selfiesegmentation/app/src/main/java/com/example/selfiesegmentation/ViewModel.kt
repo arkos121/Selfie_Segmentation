@@ -119,25 +119,6 @@ class MainViewModel : ViewModel() {
         return bitmap
     }
     fun applyBlackAndWhiteFilter(bitmap: Bitmap): Bitmap {
-//        val bmp = Bitmap.createBitmap(bitmap.width, bitmap.height, bitmap.config)
-//
-//        for (x in 0 until bitmap.width) {
-//            for (y in 0 until bitmap.height) {
-//                val pixel = bitmap.getPixel(x, y)
-//                val red = Color.red(pixel)
-//                val green = Color.green(pixel)
-//                val blue = Color.blue(pixel)
-//
-//                // Calculate grayscale
-//                val gray = (0.3 * red + 0.59 * green + 0.11 * blue).toInt()
-//
-//                // Set the pixel in the new bitmap
-//                val newPixel = Color.rgb(gray, gray, gray)
-//                bmp.setPixel(x, y, newPixel)
-//            }
-//        }
-//        _bnwBitmap.value = bmp
-//        return bmp
         val startime = System.currentTimeMillis()
         val newBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, bitmap.config)
         for (i in 0 until bitmap.width) {
