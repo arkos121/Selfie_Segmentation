@@ -40,7 +40,6 @@ class MainViewModel : ViewModel() {
     val backgrounds: LiveData<Bitmap> get() = _backgrounds
 
     private var objectDetectionCompletes = false
-
     fun selfie_segmentation(bitmap: Bitmap) {
         val startime = System.currentTimeMillis()
         if (objectDetectionCompletes) {
@@ -289,7 +288,7 @@ class MainViewModel : ViewModel() {
         println("the time taken to add the background image is ${endtime - start}")
     }
 
-    private fun applyImageSegmentationMask(original: Bitmap, mask: Bitmap, back: Bitmap): Bitmap? {
+    private fun applyImageSegmentationMask(original: Bitmap, mask: Bitmap, back: Bitmap): Bitmap {
 val scaledMask = Bitmap.createScaledBitmap(mask,original.width,original.height,false)
         val scaledBackground = Bitmap.createScaledBitmap(back,original.width,original.height,false)
         val resultBitmap = Bitmap.createBitmap(original.width,original.height,original.config)

@@ -154,6 +154,5 @@ val assetManager = this.assets
         val total = endtime - startTime
         println("the time taken for uploading the image is $total")
     }
-
 private fun showToast(message: String) = Toast.makeText(this,message,Toast.LENGTH_SHORT).show()
     }
