@@ -11,31 +11,27 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.collection.emptyLongSet
 import androidx.lifecycle.Observer
 import com.example.selfiesegmentation.databinding.LayoutBinding
 import kotlinx.coroutines.withTimeout
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var loadedBitmap : Bitmap
+    private var loadedBitmap : Bitmap ?=null
     private lateinit var storedimg : Bitmap
     private val viewModel : MainViewModel by viewModels()
-private lateinit var binding: LayoutBinding
-
-
+    private lateinit var binding: LayoutBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = LayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
         super.onCreate(savedInstanceState)
         // Store the loaded bitmap here
-        val spinner: Spinner = findViewById(R.id.dropdown)
         val filters = arrayOf("Default" , "Original", "B&W" , "Sepia")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, filters)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapter
-
-
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+        binding.dropdown.adapter = adapter
+        binding.dropdown.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
@@ -64,66 +60,78 @@ private lateinit var binding: LayoutBinding
 
         binding.button1.setOnClickListener {
             loader("photo1.jpg")
-
         }
-
         binding.button2.setOnClickListener {
-            loadedBitmap.let {
+            if(loadedBitmap!=null)
+            loadedBitmap?.let {
                 viewModel.processImageObjectDetection(it)
             }
+            else
+                showToast("No image loaded")
         }
             binding.button3.setOnClickListener {
-                loadedBitmap.let {
+                if (loadedBitmap!=null)
+                loadedBitmap?.let {
                     viewModel.selfie_segmentation(it)
                 }
+                else
+                    showToast("No image loaded")
             }
-
         binding.blue.setOnClickListener {
-            loadedBitmap?.let{
+            loadedBitmap.let{
+                if(it!=null && viewModel.maskBitmap.value!=null){
                 viewModel.background(it,viewModel.maskBitmap.value!!,Color.BLUE)
-                showToast("Blue BackgroundAdded")
+                showToast("Blue BackgroundAdded")}
+                else
+                showToast("Bitmap or mask is missing!")
             }
         }
-
         binding.purple.setOnClickListener {
-            loadedBitmap?.let {
+            loadedBitmap.let {
+                if(it!=null && viewModel.maskBitmap.value!=null){
                 viewModel.background(it,viewModel.maskBitmap.value!!,Color.MAGENTA)
-                showToast("Purple BackgroundAdded")
+                showToast("Purple BackgroundAdded")}
+                    else
+                        showToast("Bitmap or mask is missing!")
             }
         }
 
         binding.red.setOnClickListener {
             loadedBitmap.let {
+                if(it!=null && viewModel.maskBitmap.value!=null){
                 viewModel?.background(it,viewModel.maskBitmap.value!!,Color.RED)
-                showToast("Red BackgroundAdded")
+                showToast("Red BackgroundAdded")}
+                else
+                    showToast("Bitmap or mask is missing!")
             }
         }
-
         binding.yellow.setOnClickListener {
-            loadedBitmap.let {
+            loadedBitmap?.let {
+                if(viewModel.maskBitmap.value!=null){
                 viewModel.background(it,viewModel.maskBitmap.value!!,viewModel.calculateavgforeground(it,viewModel.maskBitmap.value!!))
-                showToast("Contrasting color")
+                showToast("Contrasting color")}
+                else
+                    showToast("Bitmap or mask is missing!")
             }
         }
         binding.image.setOnClickListener {
-          loadedBitmap.let{
+          loadedBitmap?.let{
+              if(viewModel.maskBitmap.value!=null){
               viewModel.setBackground(assets,"damn.jpg")
-              viewModel.applyNewBackground(loadedBitmap,viewModel.maskBitmap.value!!)
+              viewModel.applyNewBackground(loadedBitmap!!,viewModel.maskBitmap.value!!)
+                  showToast("Image bg added")}
+              else{
+                  showToast("Bitmap or mask is missing")
+              }
           }
-
         }
-
         viewModel.bitmap.observe(this, Observer { bitmap -> binding.imageview.setImageBitmap(bitmap) })
         viewModel.statusMessage.observe(this,Observer{message -> binding.textView.text = message})
         viewModel.maskBitmap.observe(this,Observer{bitmap -> binding.imageview.setImageBitmap(bitmap)})
         viewModel.backgrounds.observe(this,Observer{bitmap -> binding.imageview.setImageBitmap(bitmap)})
-        viewModel.bnwBitmap.observe(this, { bitmap -> binding.imageview.setImageBitmap(bitmap) })
-        viewModel.sepiaBitmap.observe(this, { bitmap -> binding.imageview.setImageBitmap(bitmap) })
-
-
+        viewModel.bnwBitmap.observe(this) { bitmap -> binding.imageview.setImageBitmap(bitmap) }
+        viewModel.sepiaBitmap.observe(this) { bitmap -> binding.imageview.setImageBitmap(bitmap) }
     }
-
-
 
     private fun loader(fileName : String){
         val startTime = System.currentTimeMillis()

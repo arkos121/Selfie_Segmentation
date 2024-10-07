@@ -83,7 +83,6 @@ class MainViewModel : ViewModel() {
         val canvas = android.graphics.Canvas(resultBitmap)
         val paint = Paint()
 
-
         for (x in 0 until original.width) {
             for (y in 0 until original.height) {
                 val maskPixel = scaledMask.getPixel(x, y)
@@ -125,7 +124,6 @@ class MainViewModel : ViewModel() {
             for (j in 0 until bitmap.height) {
                 // Get the pixel color
                 val pixel = bitmap.getPixel(i, j)
-
                 // Extract the red, green, and blue components
                 val red = Color.red(pixel)
                 val green = Color.green(pixel)
