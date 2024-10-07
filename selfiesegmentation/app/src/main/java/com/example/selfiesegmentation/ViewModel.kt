@@ -28,7 +28,7 @@ class MainViewModel : ViewModel() {
     val bnwBitmap: LiveData<Bitmap> get() = _bnwBitmap
 
     private val _bitmap = MutableLiveData<Bitmap?>()
-    val bitmap: LiveData<Bitmap?> get() = _bitmap
+    val bitmap: MutableLiveData<Bitmap?> get() = _bitmap
 
     private val _statusMessage = MutableLiveData<String>()
     val statusMessage: LiveData<String> = _statusMessage
@@ -240,15 +240,12 @@ class MainViewModel : ViewModel() {
         for (x in 0 until width) {
             for (y in 0 until height) {
                 val maskpixel = mask.getPixel(x, y)
-
                 if (Color.alpha(maskpixel) > 128) {
                     val pixel = original.getPixel(x, y)
-
                     red += Color.red(pixel)
                     green += Color.green(pixel)
                     blue += Color.blue(pixel)
                     count++
-
                 }
             }
         }

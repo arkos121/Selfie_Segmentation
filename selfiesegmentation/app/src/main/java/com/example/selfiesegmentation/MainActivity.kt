@@ -40,8 +40,8 @@ class MainActivity : AppCompatActivity() {
             ) {
                 val selectedFilter = filters[position]
                 when (selectedFilter) {
-
                     "Original" -> if(::storedimg.isInitialized){
+                        viewModel.bitmap.value = storedimg
                         binding.imageview.setImageBitmap(storedimg)
                     }
                     else{
