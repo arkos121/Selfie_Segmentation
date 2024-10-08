@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                 viewModel.background(it,viewModel.maskBitmap.value!!,Color.BLUE)
                 showToast("Blue BackgroundAdded")}
                 else
-                showToast("Bitmap or mask is missing!")
+                showToast("Mask is missing!")
             }
         }
         binding.purple.setOnClickListener {
@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
                 viewModel.background(it,viewModel.maskBitmap.value!!,Color.MAGENTA)
                 showToast("Purple BackgroundAdded")}
                     else
-                        showToast("Bitmap or mask is missing!")
+                        showToast("Mask is missing!")
             }
         }
 
@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity() {
                 viewModel?.background(it,viewModel.maskBitmap.value!!,Color.RED)
                 showToast("Red BackgroundAdded")}
                 else
-                    showToast("Bitmap or mask is missing!")
+                    showToast("Mask is missing!")
             }
         }
         binding.yellow.setOnClickListener {
@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity() {
                 viewModel.background(it,viewModel.maskBitmap.value!!,viewModel.calculateavgforeground(it,viewModel.maskBitmap.value!!))
                 showToast("Contrasting color")}
                 else
-                    showToast("Bitmap or mask is missing!")
+                    showToast("Mask is missing!")
             }
         }
         binding.image.setOnClickListener {
@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity() {
               viewModel.applyNewBackground(loadedBitmap!!,viewModel.maskBitmap.value!!)
                   showToast("Image bg added")}
               else{
-                  showToast("Bitmap or mask is missing")
+                  showToast("Mask is missing")
               }
           }
         }
