@@ -223,9 +223,12 @@ class MainViewModel : ViewModel() {
     }
 
     fun background(bitmap: Bitmap, mask: Bitmap, color: Int) {
+        var startime = System.currentTimeMillis()
         val bitmapstore = applySegmentationMask(bitmap, mask, color)
         _bitmap.value = bitmapstore
         _statusMessage.value = "Segmentation successful!"
+        var endtime = System.currentTimeMillis()
+        println("the time taken to add color is ${endtime - startime}")
     }
 
     fun calculateavgforeground(original: Bitmap, mask: Bitmap): Int {
