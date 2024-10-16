@@ -262,10 +262,8 @@ class MainViewModel : ViewModel() {
         val blues = 255 - avgBlue
 
          var k = Color.rgb(reds, greens, blues)
-        println(k);
         return k;
     }
-
   fun setBackground(assetManager: AssetManager,assetPath : String) {
 
       val inputStream = assetManager.open(assetPath)
