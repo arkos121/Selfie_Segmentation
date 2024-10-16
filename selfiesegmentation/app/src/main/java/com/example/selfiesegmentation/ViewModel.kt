@@ -129,7 +129,7 @@ class MainViewModel : ViewModel() {
                 val blue = Color.blue(pixel)
 
                 // Compute the grayscale value
-                val gray = (red * 0.3 + green * 0.59 + blue * 0.11).toInt()
+                val gray = (red * 0.3 + green * 0.59 + blue * 0.11).toInt().coerceIn(0, 255)
 
                 // Set the pixel to the grayscale color
                 newBitmap.setPixel(i, j, Color.rgb(gray, gray, gray))
@@ -236,13 +236,13 @@ class MainViewModel : ViewModel() {
         var green = 0
         var blue = 0
         var count = 0
+        val scaledMask = Bitmap.createScaledBitmap(mask,original.width,original.height,false)
+//        val width = minOf(original.width, mask.width)
+//        val height = minOf(original.height, mask.height)
 
-        val width = minOf(original.width, mask.width)
-        val height = minOf(original.height, mask.height)
-
-        for (x in 0 until width) {
-            for (y in 0 until height) {
-                val maskpixel = mask.getPixel(x, y)
+        for (x in 0 until scaledMask.width) {
+            for (y in 0 until scaledMask.height) {
+                val maskpixel = scaledMask.getPixel(x, y)
                 if (Color.alpha(maskpixel) > 128) {
                     val pixel = original.getPixel(x, y)
                     red += Color.red(pixel)
@@ -261,7 +261,9 @@ class MainViewModel : ViewModel() {
         val greens = 255 - avgGreen
         val blues = 255 - avgBlue
 
-        return Color.rgb(reds, greens, blues)
+         var k = Color.rgb(reds, greens, blues)
+        println(k);
+        return k;
     }
 
   fun setBackground(assetManager: AssetManager,assetPath : String) {
