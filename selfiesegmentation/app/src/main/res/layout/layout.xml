@@ -8,7 +8,7 @@
     <!-- Example of a Button -->
 
 
-<!--
+    <!--
     <com.example.selfiesegmentation.ZoomableImageView
         android:id="@+id/zoomableImageView"
         android:layout_width="match_parent"
@@ -39,11 +39,12 @@
         android:id="@+id/button3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="132dp"
+        android:layout_marginTop="56dp"
         android:text="Segment Selfie"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.471"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageview" />
+        app:layout_constraintTop_toTopOf="@+id/guideline" />
 
     <Button
         android:id="@+id/button1"
@@ -72,24 +73,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="168dp"
-        android:contentDescription="string/image_description"
+        android:contentDescription="/image_description"
         android:scaleType="fitCenter"
-
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <com.example.selfiesegmentation.ZoomableImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent     "
         android:id="@+id/zoomableImageView"
-        android:scaleType ="matrix"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scaleType="matrix"
+        app:layout_constraintLeft_toLeftOf="@id/imageview"
+        app:layout_constraintRight_toRightOf="@id/imageview"
         app:layout_constraintTop_toTopOf="@id/imageview"
-        app:layout_constraintBottom_toBottomOf="@id/imageview"
-        app:layout_constraintStart_toStartOf="@id/imageview"
-        app:layout_constraintEnd_toEndOf="@id/imageview"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="1dp"/>
+        app:layout_constraintBottom_toBottomOf="@id/imageview" />
+    straintVertical_bias="0.251" />
 
     <TextView
         android:id="@+id/textView"
@@ -189,6 +191,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:constraint_referenced_ids="blue,yellow,purple,red" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="282dp"
+        android:layout_marginEnd="411dp"
+        android:layout_marginBottom="449dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_begin="283dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
