@@ -75,10 +75,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.button1.setOnClickListener {
-            loader("photo1.jpg")
+            val z = viewModel.loader(assets,"photo1.jpg")
+            loadedBitmap=z
+            storedimg = z!!
+            binding.imageview.setImageBitmap(z)
+
         }
         binding.emoji.setOnClickListener{
-             temp_loader("glass.png")
+            var r = viewModel.loader(assets,"glass.png")
+            binding.zoomableImageView.setImageBitmap(r)
+
         }
         binding.button2.setOnClickListener {
             if(loadedBitmap!=null)
@@ -151,73 +157,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.bnwBitmap.observe(this) { bitmap -> binding.imageview.setImageBitmap(bitmap) }
         viewModel.sepiaBitmap.observe(this) { bitmap -> binding.imageview.setImageBitmap(bitmap) }
     }
-    private fun temp_loader(fileName : String){
-        val startTime = System.currentTimeMillis()
-        val assetManager = this.assets
-        try{
-            val inputStream = assetManager.open(fileName)
-            val newbitmap = BitmapFactory.decodeStream(inputStream)
-          //  val drawablebitmap = newbitmap.copy(Bitmap.Config.ARGB_8888, true)
-            val zoomableImageView = findViewById<ZoomableImageView>(R.id.zoomableImageView)
-            //val canvas = android.graphics.Canvas(drawablebitmap)
 
-
-            binding.zoomableImageView.setImageBitmap(newbitmap)
-            //loadedBitmap = newbitmap
-
-            zoomableImageView.setImageBitmap(newbitmap)
-            //binding.textView.text = ""
-        }
-        catch (e: IOException){
-            e.printStackTrace()
-            showToast("failed to load image")
-        }
-        val endtime = System.currentTimeMillis()
-        val total = endtime - startTime
-        println("the time taken for uploading the image is $total")
-    }
-    fun overlayDrawableOnBitmap(bitmap: Bitmap, drawable: Drawable): Bitmap {
-        // Create a mutable bitmap to draw on
-        val newBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
-
-        // Create a canvas from the bitmap
-        val canvas = android.graphics.Canvas(newBitmap)
-
-        // Set the drawable bounds (optional, you can set specific bounds if needed)
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
-
-
-        // Draw the drawable on the canvas
-        drawable.draw(canvas)
-
-        return newBitmap
-    }
-
-
-    private fun loader(fileName : String){
-        val startTime = System.currentTimeMillis()
-val assetManager = this.assets
-        try{
-            val inputStream = assetManager.open(fileName)
-            val bitmap = BitmapFactory.decodeStream(inputStream)
-            //val zoomableImageView = findViewById<ZoomableImageView>(R.id.zoomableImageView)
-            // Load your bitmap here
-
-            inputStream.close()
-            binding.imageview.setImageBitmap(bitmap)
-            loadedBitmap = bitmap
-            storedimg = bitmap
-           // zoomableImageView.setImageBitmap(loadedBitmap)
-            binding.textView.text = ""
-        }
-        catch (e: IOException){
-            e.printStackTrace()
-            showToast("failed to load image")
-        }
-        val endtime = System.currentTimeMillis()
-        val total = endtime - startTime
-        println("the time taken for uploading the image is $total")
-    }
 private fun showToast(message: String) = Toast.makeText(this,message,Toast.LENGTH_SHORT).show()
     }
 

@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,6 +16,7 @@ import com.google.mlkit.vision.objects.ObjectDetection
 import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions
 import com.google.mlkit.vision.segmentation.Segmentation
 import com.google.mlkit.vision.segmentation.selfie.SelfieSegmenterOptions
+import java.io.IOException
 import java.io.InputStream
 import java.nio.ByteBuffer
 
@@ -75,6 +77,19 @@ class MainViewModel : ViewModel() {
         println("the time taken to remove the background is ${endtime - startime}")
     }
 
+    fun loader(assetManager: AssetManager, fileName: String) : Bitmap?{
+         try {
+            val inputStream = assetManager.open(fileName)
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+            inputStream.close()
+            return bitmap
+
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return null
+        }
+
+    }
 
     private fun applySegmentationMask(original: Bitmap, mask: Bitmap, color: Int): Bitmap {
         val scaledMask = Bitmap.createScaledBitmap(mask, original.width, original.height, false)
