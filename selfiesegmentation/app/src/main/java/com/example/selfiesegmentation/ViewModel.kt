@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.Log
@@ -83,14 +84,11 @@ class MainViewModel : ViewModel() {
             val bitmap = BitmapFactory.decodeStream(inputStream)
             inputStream.close()
             return bitmap
-
         } catch (e: IOException) {
             e.printStackTrace()
             return null
         }
-
     }
-
     private fun applySegmentationMask(original: Bitmap, mask: Bitmap, color: Int): Bitmap {
         val scaledMask = Bitmap.createScaledBitmap(mask, original.width, original.height, false)
         val resultBitmap = Bitmap.createBitmap(original.width, original.height, original.config)
