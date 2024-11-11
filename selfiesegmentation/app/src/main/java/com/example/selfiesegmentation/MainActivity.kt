@@ -1,43 +1,24 @@
 package com.example.selfiesegmentation
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Color.BLUE
-import android.graphics.Color.blue
-import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.LinearLayout
-import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.collection.emptyLongSet
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.rememberTransformableState
-import androidx.compose.foundation.gestures.transformable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Canvas
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.selfiesegmentation.databinding.LayoutBinding
-import kotlinx.coroutines.withTimeout
-import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
     private var imageCounter = 0
+    private var l = ""
     private var r: Bitmap? = null
     private var loadedBitmap: Bitmap? = null
     private lateinit var storedimg: Bitmap
@@ -46,6 +27,13 @@ class MainActivity : AppCompatActivity() {
     private fun showToast(s: String) {
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
     }
+
+    private fun copyImageLocation(imageloc : String) : String{
+        Log.d("ImageLocation", "Clicked on image: $imageloc")
+        l = imageloc
+        return l
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = LayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -84,11 +72,14 @@ class MainActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>) {
             }
         }
+
         val recyclerView = binding.recyclerView
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         recyclerView.layoutManager = layoutManager
 
-        recyclerView.adapter = MyAdapter(listOf("damn.jpg","emoji.png","glass.png"),this)
+        recyclerView.adapter = MyAdapter(
+            listOf("damn.jpg", "emoji.png", "glass.png"), this, ::copyImageLocation
+        )
 
 
         binding.button1.setOnClickListener {
@@ -100,38 +91,47 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.emoji.setOnClickListener {
-            if(recyclerView.visibility==View.GONE){
-                recyclerView.visibility=View.VISIBLE
-            }else{
-                recyclerView.visibility=View.GONE
+            if (recyclerView.visibility == View.GONE) {
+                recyclerView.visibility = View.VISIBLE
+            } else {
+                recyclerView.visibility = View.GONE
             }
+
+
             fun addNewZoomableView(bitmap: Bitmap) {
-                    var newImageView = ZoomableImageView(this, null).apply {
-                        id = View.generateViewId()
-                        tag = "image_${++imageCounter}"
-                        }
-                val lp=ConstraintLayout.LayoutParams(
-                    binding.imageview.width,binding.imageview.height
+                var newImageView = ZoomableImageView(this, null).apply {
+                    id = View.generateViewId()
+                    tag = "image_${++imageCounter}"
+                }
+                val lp = ConstraintLayout.LayoutParams(
+                    binding.imageview.width, binding.imageview.height
                 ).apply {
-                    topToTop=binding.imageview.top
-                    bottomToBottom=binding.imageview.bottom
-                    startToStart=binding.imageview.left
-                    endToEnd=binding.imageview.right
+                    topToTop = binding.imageview.top
+                    bottomToBottom = binding.imageview.bottom
+                    startToStart = binding.imageview.left
+                    endToEnd = binding.imageview.right
                 }
-                newImageView.layoutParams=lp
+                newImageView.layoutParams = lp
                 newImageView.setImageBitmap(bitmap)
-                binding.imageContainer.addView(newImageView )
-                }
-                r=viewModel.loader(assets,"glass.png")
+                binding.imageContainer.addView(newImageView)
+            }
+
+            if(l !="") {
+                r = viewModel.loader(assets, l)
+
                 addNewZoomableView(r!!)
             }
+            l = ""
+            }
+
+//        the view is added above the code
             binding.button2.setOnClickListener {
                 if (loadedBitmap != null)
                     loadedBitmap?.let {
                         viewModel.processImageObjectDetection(it)
                     }
                 else
-                showToast("No image loaded")
+                    showToast("No image loaded")
             }
             binding.button3.setOnClickListener {
                 if (loadedBitmap != null)
@@ -209,6 +209,4 @@ class MainActivity : AppCompatActivity() {
             viewModel.sepiaBitmap.observe(this) { bitmap -> binding.imageview.setImageBitmap(bitmap) }
         }
 
-}
-
-
+    }
