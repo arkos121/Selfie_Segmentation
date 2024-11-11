@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.selfiesegmentation.databinding.LayoutBinding
 import kotlinx.coroutines.withTimeout
 import java.io.IOException
@@ -45,7 +46,6 @@ class MainActivity : AppCompatActivity() {
     private fun showToast(s: String) {
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = LayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -84,6 +84,12 @@ class MainActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>) {
             }
         }
+        val recyclerView = binding.recyclerView
+        val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        recyclerView.layoutManager = layoutManager
+
+        recyclerView.adapter = MyAdapter(listOf("damn.jpg","emoji.png","glass.png"),this)
+
 
         binding.button1.setOnClickListener {
             val z = viewModel.loader(assets, "photo1.jpg")
@@ -94,6 +100,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.emoji.setOnClickListener {
+            if(recyclerView.visibility==View.GONE){
+                recyclerView.visibility=View.VISIBLE
+            }else{
+                recyclerView.visibility=View.GONE
+            }
             fun addNewZoomableView(bitmap: Bitmap) {
                     var newImageView = ZoomableImageView(this, null).apply {
                         id = View.generateViewId()
