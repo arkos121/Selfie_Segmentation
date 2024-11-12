@@ -6,6 +6,7 @@ import android.graphics.Color.BLUE
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -99,10 +100,14 @@ class MainActivity : AppCompatActivity() {
 
 
             fun addNewZoomableView(bitmap: Bitmap) {
-                var newImageView = ZoomableImageView(this, null).apply {
+                val newImageView = ZoomableImageView(this, null).apply {
                     id = View.generateViewId()
                     tag = "image_${++imageCounter}"
+                    isClickable = true
+                    isLongClickable = true
+                    Log.d("ZoomableView", "Creating new view with tag: $tag")
                 }
+
                 val lp = ConstraintLayout.LayoutParams(
                     binding.imageview.width, binding.imageview.height
                 ).apply {
@@ -114,14 +119,13 @@ class MainActivity : AppCompatActivity() {
                 newImageView.layoutParams = lp
                 newImageView.setImageBitmap(bitmap)
                 binding.imageContainer.addView(newImageView)
-            }
 
+            }
             if(l !="") {
                 r = viewModel.loader(assets, l)
-
                 addNewZoomableView(r!!)
+                l = ""
             }
-            l = ""
             }
 
 //        the view is added above the code

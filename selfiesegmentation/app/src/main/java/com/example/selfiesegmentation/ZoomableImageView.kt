@@ -9,6 +9,7 @@ import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
+import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
 
 class ZoomableImageView(context: Context, attrs: AttributeSet?) : AppCompatImageView(context, attrs) {
@@ -20,6 +21,7 @@ class ZoomableImageView(context: Context, attrs: AttributeSet?) : AppCompatImage
 
     private val scaleGestureDetector = ScaleGestureDetector(context, ScaleListener())
     private val gestureDetector = GestureDetector(context, GestureListener())
+    private val gestureDetector2 = GestureDetector(context, GestureDet())
 
     private val lastPoint = PointF()
     private val currentPoint = PointF()
@@ -27,12 +29,13 @@ class ZoomableImageView(context: Context, attrs: AttributeSet?) : AppCompatImage
 
     init {
         scaleType = ScaleType.MATRIX
+        isLongClickable = true
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         scaleGestureDetector.onTouchEvent(event)
         gestureDetector.onTouchEvent(event)
-
+        gestureDetector2.onTouchEvent(event)
         val pointerCount = event.pointerCount
         if (pointerCount == 1) {
             when (event.action) {
@@ -84,4 +87,14 @@ class ZoomableImageView(context: Context, attrs: AttributeSet?) : AppCompatImage
             return true
         }
     }
+
+    private inner class GestureDet : GestureDetector.SimpleOnGestureListener(){
+        override fun onLongPress(e: MotionEvent) {
+            (parent as? android.view.ViewGroup)?.removeView(this@ZoomableImageView)
+            matrix.reset()
+            invalidate()
+            return
+        }
+    }
+
 }
