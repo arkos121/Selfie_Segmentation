@@ -100,6 +100,7 @@ class MainActivity : AppCompatActivity() {
 
 
             fun addNewZoomableView(bitmap: Bitmap) {
+
                 val newImageView = ZoomableImageView(this, null).apply {
                     id = View.generateViewId()
                     tag = "image_${++imageCounter}"
@@ -119,6 +120,7 @@ class MainActivity : AppCompatActivity() {
                 newImageView.layoutParams = lp
                 newImageView.setImageBitmap(bitmap)
                 binding.imageContainer.addView(newImageView)
+
 
             }
             if(l !="") {
