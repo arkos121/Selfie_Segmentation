@@ -77,9 +77,13 @@ class MainActivity : AppCompatActivity() {
         val recyclerView = binding.recyclerView
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         recyclerView.layoutManager = layoutManager
-
+        val lis = listOf(
+            "damn.jpg", "emoji.png", "glass.png", "image 3.png","image 2.png","image 6.png","image 1340.png","image 627.png","image 304.png",
+             "image 1348.png",
+            "image 1772.png",
+        )
         recyclerView.adapter = MyAdapter(
-            listOf("damn.jpg", "emoji.png", "glass.png"), this, ::copyImageLocation
+           lis, this, ::copyImageLocation
         )
 
 
