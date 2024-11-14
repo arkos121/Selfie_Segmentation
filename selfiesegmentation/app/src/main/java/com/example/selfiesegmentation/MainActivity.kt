@@ -20,7 +20,6 @@ import com.example.selfiesegmentation.databinding.LayoutBinding
 class MainActivity : AppCompatActivity() {
     private var imageCounter = 0
     private var l = ""
-    private var r: Bitmap? = null
     private var loadedBitmap: Bitmap? = null
     private lateinit var storedimg: Bitmap
     private val viewModel: MainViewModel by viewModels()
@@ -96,7 +95,6 @@ class MainActivity : AppCompatActivity() {
 
 
             fun addNewZoomableView(bitmap: Bitmap) {
-
                 val newImageView = ZoomableImageView(this, null).apply {
                     id = View.generateViewId()
                     tag = "image_${++imageCounter}"
@@ -106,33 +104,46 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 val lp = ConstraintLayout.LayoutParams(
-                    binding.imageview.width, binding.imageview.height
+                    ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
+                    ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
                 ).apply {
-                    topToTop = binding.imageview.top
-                    bottomToBottom = binding.imageview.bottom
-                    startToStart = binding.imageview.left
-                    endToEnd = binding.imageview.right
+                    topToTop = binding.imageContainer.id
+                    bottomToBottom = binding.imageContainer.id
+                    startToStart = binding.imageContainer.id
+                    endToEnd = binding.imageContainer.id
                 }
+
                 newImageView.layoutParams = lp
                 newImageView.setImageBitmap(bitmap)
+
+                Log.d("ZoomableView", "Adding new ImageView to container")
                 binding.imageContainer.addView(newImageView)
-
-
+                binding.imageContainer.requestLayout()
             }
+
             if (l!="") {
-                val bitmap =
-                // Check if `l` is a file path or asset name and adjust accordingly
-              if (l.startsWith("/data/") || l.startsWith("file://")) {
+              if (l.startsWith("/storage/") || l.startsWith("file://")) {
                     // Pass file path directly to `loader`
-                    imagelo.justLoad(l)
-                } else {
+                  println("it is coming here")
+                  l = l.substringAfterLast("/")
+                  val b = imagelo.justLoad(l)
+                println("on create $b")
+                  if (b != null) {
+                      println("is b there")
+                      addNewZoomableView(b)
+                      println("Bitmap loaded and added to ZoomableView")
+                  } else {
+                      println("Bitmap is null, failed to load image from $l")
+                  }
+              } else {
                     // Pass asset path directly to `loader`
-                    viewModel.loader(assets, l)
+                    var b = viewModel.loader(assets, l)
+                  addNewZoomableView(b!!)
                 }
                 // Only add a new view if the bitmap was successfully loaded
-                bitmap?.let {
-                    addNewZoomableView(it)
-                }
+//                bitmap?.let {
+//                    addNewZoomableView(it)
+//                }
                 l =""
             }
         }
@@ -155,7 +166,7 @@ class MainActivity : AppCompatActivity() {
 // Observe stickermap to save and retrieve when ready
         viewModel.stickermap.observe(this) { segmentedBitmap ->
             segmentedBitmap?.let {
-                imagelo.saveBitmap(it, "hey") // Save the bitmap when it's available
+                imagelo.saveBitmapAsPNG(it, "hey") // Save the bitmap when it's available
                 println(imagelo.getImagePath("hey"))
             }
         }
@@ -188,20 +199,17 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             binding.yellow.setOnClickListener {
-//                loadedBitmap?.let {
-//                    if (viewModel.maskBitmap.value != null) {
-//                        viewModel.background(
-//                            it,
-//                            viewModel.maskBitmap.value!!,
-//                            viewModel.calculateavgforeground(it, viewModel.maskBitmap.value!!)
-//                        )
-//                        showToast("Contrasting color")
-//                    } else
-//                        showToast("Mask is missing!")
-//                }
-                //imagelo.justLoad("hey")
-                binding.imageview.setImageBitmap(imagelo.justLoad("hey"))
-                showToast("did")
+                loadedBitmap?.let {
+                    if (viewModel.maskBitmap.value != null) {
+                        viewModel.background(
+                            it,
+                            viewModel.maskBitmap.value!!,
+                            viewModel.calculateavgforeground(it, viewModel.maskBitmap.value!!)
+                        )
+                        showToast("Contrasting color")
+                    } else
+                        showToast("Mask is missing!")
+                }
             }
             binding.image.setOnClickListener {
                 loadedBitmap?.let {
@@ -228,7 +236,7 @@ class MainActivity : AppCompatActivity() {
                 Observer { bitmap -> binding.imageview.setImageBitmap(bitmap) })
             viewModel.bnwBitmap.observe(this) { bitmap -> binding.imageview.setImageBitmap(bitmap) }
             viewModel.sepiaBitmap.observe(this) { bitmap -> binding.imageview.setImageBitmap(bitmap) }
-//        viewModel.stickermap.observe(this){}
+
         }
 
     }

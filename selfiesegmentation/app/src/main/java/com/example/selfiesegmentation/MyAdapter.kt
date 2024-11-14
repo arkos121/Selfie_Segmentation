@@ -46,7 +46,7 @@ class MyAdapter(
     private fun getBitmapFromUri(uri: String): Bitmap? {
         return try {
             when {
-                uri.startsWith("/data/") -> {
+                uri.startsWith("/storage/") -> {
                     // Load from file path
                    // val filePath = uri.removePrefix("file://")
                     BitmapFactory.decodeFile(uri)

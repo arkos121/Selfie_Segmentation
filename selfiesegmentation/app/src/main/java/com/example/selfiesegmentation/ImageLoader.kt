@@ -3,65 +3,75 @@ package com.example.selfiesegmentation
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Environment
+import android.util.Log
 import android.widget.ImageView
 import androidx.core.graphics.scale
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 
 class ImageLoader(private val context: Context) {
-
-    // Get directory for storing images
-    private val imageDir: File by lazy {
-        File(context.filesDir, "images").apply {
-            if (!exists()) mkdirs()
+    // Get external cache directory for storing images
+    private val imageDir: File? by lazy {
+        context.externalCacheDir?.let { cacheDir ->
+            File(cacheDir, "images").apply {
+                if (!exists()) mkdirs()
+            }
         }
     }
-
     fun justLoad(fileName: String): Bitmap? {
         return try {
-            val file = File(imageDir, fileName)
-            if (file.exists()) {
-                // Decode the original bitmap
-                val originalBitmap = BitmapFactory.decodeFile(file.absolutePath)
-
-                // Scale the bitmap down to 200x200 and return it
-                Bitmap.createScaledBitmap(originalBitmap, 200, 200, true)
-            } else {
-                null
+            // Check if imageDir exists
+            if (imageDir == null) {
+                Log.e("ImageLoader", "External cache directory not available")
+                return null
             }
+
+            val file = File(imageDir, fileName)
+
+            if (!file.exists()) {
+                Log.e("ImageLoader", "File doesn't exist at path: ${file.absolutePath}")
+                return null
+            }
+
+            val originalBitmap = BitmapFactory.decodeFile(file.absolutePath)
+            if (originalBitmap == null) {
+                Log.e("ImageLoader", "Failed to decode bitmap")
+                return null
+            }
+
+            // Resize to exact dimensions
+            val resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, 200, 200, true)
+            originalBitmap.recycle() // Free up the original bitmap
+
+            // Save the resized version
+            saveBitmapAsPNG(resizedBitmap, fileName)
+
+            Log.d("ImageLoader", "Image loaded and resized successfully at: ${file.absolutePath}")
+            resizedBitmap
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("ImageLoader", "Error loading image", e)
             null
         }
     }
 
-
-
-    // Load from internal storage
-    fun loadImage(imageView: ImageView, fileName: String): Bitmap? {
-        try {
-            val file = File(imageDir, fileName)
-            if (file.exists()) {
-                val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-                imageView.setImageBitmap(bitmap)
-                return bitmap
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return null
-    }
-
-    // Save bitmap to internal storage
-    fun saveBitmap(bitmap: Bitmap, fileName: String): String? {
+    fun saveBitmapAsPNG(bitmap: Bitmap, fileName: String): String? {
         return try {
+            if (imageDir == null) {
+                Log.e("ImageLoader", "External cache directory not available")
+                return null
+            }
+
             val file = File(imageDir, fileName)
             FileOutputStream(file).use { out ->
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+               // out.flush()
             }
+            Log.d("ImageLoader", "Saved PNG successfully at: ${file.absolutePath}")
             file.absolutePath
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("ImageLoader", "Error saving PNG", e)
             null
         }
     }
@@ -98,11 +108,11 @@ class ImageLoader(private val context: Context) {
 
     // List all saved images
     fun listSavedImages(): List<String> {
-        return imageDir.listFiles()?.map { it.name } ?: emptyList()
+        return imageDir?.listFiles()?.map { it.name } ?: emptyList()
     }
 
     // Clear all saved images
     fun clearAll() {
-        imageDir.listFiles()?.forEach { it.delete() }
+        imageDir?.listFiles()?.forEach { it.delete() }
     }
 }
