@@ -82,17 +82,6 @@ class MainViewModel : ViewModel() {
         println("the time taken to remove the background is ${endtime - startime}")
     }
 
-    fun loader(assetManager: AssetManager, fileName: String) : Bitmap?{
-         try {
-            val inputStream = assetManager.open(fileName)
-            val bitmap = BitmapFactory.decodeStream(inputStream)
-            inputStream.close()
-            return bitmap
-        } catch (e: IOException) {
-            e.printStackTrace()
-            return null
-        }
-    }
 
     // Static, constant list that doesn’t change across sessions
     private val staticImageList = listOf(

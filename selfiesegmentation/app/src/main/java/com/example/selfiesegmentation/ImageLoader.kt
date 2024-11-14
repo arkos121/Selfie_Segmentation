@@ -1,6 +1,7 @@
 package com.example.selfiesegmentation
 
 import android.content.Context
+import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Environment
@@ -43,10 +44,10 @@ class ImageLoader(private val context: Context) {
 
             // Resize to exact dimensions
             val resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, 200, 200, true)
-            originalBitmap.recycle() // Free up the original bitmap
 
             // Save the resized version
             saveBitmapAsPNG(resizedBitmap, fileName)
+
 
             Log.d("ImageLoader", "Image loaded and resized successfully at: ${file.absolutePath}")
             resizedBitmap
@@ -63,6 +64,7 @@ class ImageLoader(private val context: Context) {
                 return null
             }
 
+
             val file = File(imageDir, fileName)
             FileOutputStream(file).use { out ->
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
@@ -75,6 +77,19 @@ class ImageLoader(private val context: Context) {
             null
         }
     }
+
+    fun loader(assetManager: AssetManager, fileName: String) : Bitmap?{
+        try {
+            val inputStream = assetManager.open(fileName)
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+            inputStream.close()
+            return bitmap
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return null
+        }
+    }
+
 
     // Load from assets
     fun loadFromAssets(imageView: ImageView, assetFileName: String) {

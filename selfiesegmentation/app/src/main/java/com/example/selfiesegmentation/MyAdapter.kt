@@ -18,7 +18,7 @@ class MyAdapter(
     private var copyImageLocation: (String) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.imageView)
     }
 

@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
            imageList, this, ::copyImageLocation
         )
         binding.button1.setOnClickListener {
-            val z = viewModel.loader(assets,"photo1.jpg")
+            val z = imagelo.loader(assets,"photo1.jpg")
             loadedBitmap = z
             storedimg = z!!
             binding.imageview.setImageBitmap(z)
@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity() {
                   }
               } else {
                     // Pass asset path directly to `loader`
-                    var b = viewModel.loader(assets, l)
+                    var b = imagelo.loader(assets, l)
                   addNewZoomableView(b!!)
                 }
                 // Only add a new view if the bitmap was successfully loaded
@@ -161,13 +161,14 @@ class MainActivity : AppCompatActivity() {
             loadedBitmap?.let {
                 viewModel.selfie_segmentation(it) // Trigger segmentation
             }
-        }
+
 
 // Observe stickermap to save and retrieve when ready
-        viewModel.stickermap.observe(this) { segmentedBitmap ->
-            segmentedBitmap?.let {
-                imagelo.saveBitmapAsPNG(it, "hey") // Save the bitmap when it's available
-                println(imagelo.getImagePath("hey"))
+            viewModel.stickermap.observe(this) { segmentedBitmap ->
+                segmentedBitmap?.let {
+                    imagelo.saveBitmapAsPNG(it, "hey") // Save the bitmap when it's available
+                    println(imagelo.getImagePath("hey"))
+                }
             }
         }
         binding.blue.setOnClickListener {
