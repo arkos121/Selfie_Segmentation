@@ -9,7 +9,6 @@ import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
-import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
 
 class ZoomableImageView(context: Context, attrs: AttributeSet?) : AppCompatImageView(context, attrs) {

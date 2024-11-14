@@ -25,16 +25,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var storedimg: Bitmap
     private val viewModel: MainViewModel by viewModels()
     private lateinit var binding: LayoutBinding
+    private val imagelo : ImageLoader = ImageLoader(this)
     private fun showToast(s: String) {
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
     }
-
     private fun copyImageLocation(imageloc : String) : String{
         Log.d("ImageLocation", "Clicked on image: $imageloc")
         l = imageloc
         return l
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = LayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -73,22 +72,15 @@ class MainActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>) {
             }
         }
-
+        val imageList = viewModel.getImageListWithDynamicPath(imagelo)
         val recyclerView = binding.recyclerView
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         recyclerView.layoutManager = layoutManager
-        val lis = listOf(
-            "damn.jpg", "emoji.png", "glass.png", "image 3.png","image 2.png","image 6.png","image 1340.png","image 627.png","image 304.png",
-             "image 1348.png",
-            "image 1772.png",
-        )
         recyclerView.adapter = MyAdapter(
-           lis, this, ::copyImageLocation
+           imageList, this, ::copyImageLocation
         )
-
-
         binding.button1.setOnClickListener {
-            val z = viewModel.loader(assets, "photo1.jpg")
+            val z = viewModel.loader(assets,"photo1.jpg")
             loadedBitmap = z
             storedimg = z!!
             binding.imageview.setImageBitmap(z)
@@ -127,12 +119,23 @@ class MainActivity : AppCompatActivity() {
 
 
             }
-            if(l !="") {
-                r = viewModel.loader(assets, l)
-                addNewZoomableView(r!!)
-                l = ""
+            if (l!="") {
+                val bitmap =
+                // Check if `l` is a file path or asset name and adjust accordingly
+              if (l.startsWith("/data/") || l.startsWith("file://")) {
+                    // Pass file path directly to `loader`
+                    imagelo.justLoad(l)
+                } else {
+                    // Pass asset path directly to `loader`
+                    viewModel.loader(assets, l)
+                }
+                // Only add a new view if the bitmap was successfully loaded
+                bitmap?.let {
+                    addNewZoomableView(it)
+                }
+                l =""
             }
-            }
+        }
 
 //        the view is added above the code
             binding.button2.setOnClickListener {
@@ -143,15 +146,20 @@ class MainActivity : AppCompatActivity() {
                 else
                     showToast("No image loaded")
             }
-            binding.button3.setOnClickListener {
-                if (loadedBitmap != null)
-                    loadedBitmap?.let {
-                        viewModel.selfie_segmentation(it)
-                    }
-                else
-                    showToast("No image loaded")
+        binding.button3.setOnClickListener {
+            loadedBitmap?.let {
+                viewModel.selfie_segmentation(it) // Trigger segmentation
             }
-            binding.blue.setOnClickListener {
+        }
+
+// Observe stickermap to save and retrieve when ready
+        viewModel.stickermap.observe(this) { segmentedBitmap ->
+            segmentedBitmap?.let {
+                imagelo.saveBitmap(it, "hey") // Save the bitmap when it's available
+                println(imagelo.getImagePath("hey"))
+            }
+        }
+        binding.blue.setOnClickListener {
                 loadedBitmap.let {
                     if (it != null && viewModel.maskBitmap.value != null) {
                         viewModel.background(it, viewModel.maskBitmap.value!!, BLUE)
@@ -180,17 +188,20 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             binding.yellow.setOnClickListener {
-                loadedBitmap?.let {
-                    if (viewModel.maskBitmap.value != null) {
-                        viewModel.background(
-                            it,
-                            viewModel.maskBitmap.value!!,
-                            viewModel.calculateavgforeground(it, viewModel.maskBitmap.value!!)
-                        )
-                        showToast("Contrasting color")
-                    } else
-                        showToast("Mask is missing!")
-                }
+//                loadedBitmap?.let {
+//                    if (viewModel.maskBitmap.value != null) {
+//                        viewModel.background(
+//                            it,
+//                            viewModel.maskBitmap.value!!,
+//                            viewModel.calculateavgforeground(it, viewModel.maskBitmap.value!!)
+//                        )
+//                        showToast("Contrasting color")
+//                    } else
+//                        showToast("Mask is missing!")
+//                }
+                //imagelo.justLoad("hey")
+                binding.imageview.setImageBitmap(imagelo.justLoad("hey"))
+                showToast("did")
             }
             binding.image.setOnClickListener {
                 loadedBitmap?.let {
@@ -217,6 +228,7 @@ class MainActivity : AppCompatActivity() {
                 Observer { bitmap -> binding.imageview.setImageBitmap(bitmap) })
             viewModel.bnwBitmap.observe(this) { bitmap -> binding.imageview.setImageBitmap(bitmap) }
             viewModel.sepiaBitmap.observe(this) { bitmap -> binding.imageview.setImageBitmap(bitmap) }
+//        viewModel.stickermap.observe(this){}
         }
 
     }

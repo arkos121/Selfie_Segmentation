@@ -8,7 +8,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,12 +17,15 @@ import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions
 import com.google.mlkit.vision.segmentation.Segmentation
 import com.google.mlkit.vision.segmentation.selfie.SelfieSegmenterOptions
 import java.io.IOException
-import java.io.InputStream
 import java.nio.ByteBuffer
 
 
 class MainViewModel : ViewModel() {
 
+    private val _stickermap = MutableLiveData<Bitmap>()
+    val stickermap: LiveData<Bitmap> get() = _stickermap
+
+    var bs : Pair<Bitmap,Bitmap> ?= null
     private val _sepiaBitmap = MutableLiveData<Bitmap>()
     val sepiaBitmap: LiveData<Bitmap> get() = _sepiaBitmap
 
@@ -63,8 +65,10 @@ class MainViewModel : ViewModel() {
                     val maskBitmap = convertByteBufferToBitmap(maskBuffer, maskWidth, maskHeight)
 
                     val resultBitmap = applySegmentationMask(bitmap, maskBitmap, Color.WHITE)
+                    bs = resultBitmap
                     _maskBitmap.value = maskBitmap
-                    _bitmap.value = resultBitmap
+                    _bitmap.value = resultBitmap.first
+                    _stickermap.value = resultBitmap.second
                     _statusMessage.value = "Segmentation successful!"
                 }
                 .addOnFailureListener { e ->
@@ -89,25 +93,52 @@ class MainViewModel : ViewModel() {
             return null
         }
     }
-    private fun applySegmentationMask(original: Bitmap, mask: Bitmap, color: Int): Bitmap {
+
+    // Static, constant list that doesn’t change across sessions
+    private val staticImageList = listOf(
+        "damn.jpg", "emoji.png", "glass.png", "image 3.png", "image 2.png",
+        "image 6.png", "image 1340.png", "image 627.png", "image 304.png",
+        "image 1348.png", "image 1772.png"
+    )
+    // Function that generates the final list with the dynamic path
+    fun getImageListWithDynamicPath(imagelo: ImageLoader): List<String> {
+        // Initialize a mutable list based on the static list
+        val list = staticImageList.toMutableList()
+
+        // Add the dynamic path from imagelo.getImagePath("hey") if it’s available
+        imagelo.getImagePath("hey")?.let {
+            list.add(0, it) // Add at the beginning, or adjust as needed
+        }
+        return list
+    }
+
+    private fun applySegmentationMask(original: Bitmap, mask: Bitmap, color: Int): Pair<Bitmap,Bitmap> {
         val scaledMask = Bitmap.createScaledBitmap(mask, original.width, original.height, false)
         val resultBitmap = Bitmap.createBitmap(original.width, original.height, original.config)
+        val sticker = Bitmap.createBitmap(original.width,original.height,original.config)
         val canvas = android.graphics.Canvas(resultBitmap)
+        val canvas2 = Canvas(sticker)
         val paint = Paint()
+        val paint2 = Paint()
+
 
         for (x in 0 until original.width) {
             for (y in 0 until original.height) {
                 val maskPixel = scaledMask.getPixel(x, y)
                 if (Color.alpha(maskPixel) > 128) {
                     paint.color = original.getPixel(x, y)
+                    paint2.color = original.getPixel(x,y)
+
                 } else {
                     paint.color = color
+                   paint2.color = Color.TRANSPARENT
                 }
                 canvas.drawPoint(x.toFloat(), y.toFloat(), paint)
+                canvas2.drawPoint(x.toFloat(),y.toFloat(),paint2)
             }
         }
 
-        return resultBitmap
+        return Pair(resultBitmap,sticker)
     }
 
     private fun convertByteBufferToBitmap(buffer: ByteBuffer, width: Int, height: Int): Bitmap {
@@ -238,7 +269,7 @@ class MainViewModel : ViewModel() {
     fun background(bitmap: Bitmap, mask: Bitmap, color: Int) {
         var startime = System.currentTimeMillis()
         val bitmapstore = applySegmentationMask(bitmap, mask, color)
-        _bitmap.value = bitmapstore
+        _bitmap.value = bitmapstore.first
         _statusMessage.value = "Segmentation successful!"
         var endtime = System.currentTimeMillis()
         println("the time taken to add color is ${endtime - startime}")
