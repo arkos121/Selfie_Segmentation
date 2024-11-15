@@ -331,26 +331,45 @@ class MainViewModel : ViewModel() {
     }
 
     private fun applyImageSegmentationMask(original: Bitmap, mask: Bitmap, back: Bitmap): Bitmap {
-val scaledMask = Bitmap.createScaledBitmap(mask,original.width,original.height,false)
-        val scaledBackground = Bitmap.createScaledBitmap(back,original.width,original.height,false)
-        val resultBitmap = Bitmap.createBitmap(original.width,original.height,original.config)
-        val canvas = android.graphics.Canvas(resultBitmap)
-        val paint = Paint()
+        // Scale the mask and background image to match the original size
+        val scaledMask = Bitmap.createScaledBitmap(mask, original.width, original.height, false)
+        val scaledBackground = Bitmap.createScaledBitmap(back, original.width, original.height, false)
 
-        for(x in 0 until original.width){
-            for(y in 0 until original.height){
-                val maskPixel = scaledMask.getPixel(x,y)
-                if(Color.alpha(maskPixel) > 128){
-                    paint.color = original.getPixel(x,y)
-                }
-                else{
-                    paint.color = scaledBackground.getPixel(x,y)
-                }
-                canvas.drawPoint(x.toFloat(),y.toFloat(),paint)
+        // Create arrays to store pixel data
+        val resultPixels = IntArray(original.width * original.height)
+        val stickerPixels = IntArray(original.width * original.height)
+
+        // Loop through each pixel and process it
+        for (x in 0 until original.width) {
+            for (y in 0 until original.height) {
+                val maskPixel = scaledMask.getPixel(x, y)
+
+                val index = y * original.width + x  // Calculate index for result arrays
+
+                if (Color.alpha(maskPixel) > 128) { // Foreground (alpha > 128)
+                    val originalPixel = original.getPixel(x, y)
+                    // Set the foreground pixel with full opacity (alpha = 255)
+                    resultPixels[index] = Color.argb(255, Color.red(originalPixel), Color.green(originalPixel), Color.blue(originalPixel))
+                    stickerPixels[index] = resultPixels[index]
+                } else { // Background (alpha <= 128)
+                    resultPixels[index] = scaledBackground.getPixel(x, y)
+                    stickerPixels[index] = Color.TRANSPARENT
                 }
             }
-        return resultBitmap
         }
+
+        // Create result bitmap and set pixels
+        val resultBitmap = Bitmap.createBitmap(original.width, original.height, original.config)
+        resultBitmap.setPixels(resultPixels, 0, original.width, 0, 0, original.width, original.height)
+
+        // Create sticker bitmap and set pixels for background
+        val sticker = Bitmap.createBitmap(original.width, original.height, original.config)
+        sticker.setPixels(stickerPixels, 0, original.width, 0, 0, original.width, original.height)
+
+        return resultBitmap  // Return the final image with the applied mask
+    }
+
+
     }
 
 
