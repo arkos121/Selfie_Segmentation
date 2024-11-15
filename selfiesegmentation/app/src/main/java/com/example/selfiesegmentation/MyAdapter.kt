@@ -13,7 +13,7 @@ import java.io.File
 import java.io.IOException
 
 class MyAdapter(
-    private var dataListitem: List<String>,
+    private var dataListitem: MutableList<String>,
     private var context: Context,
     private var copyImageLocation: (String) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -41,6 +41,12 @@ class MyAdapter(
         myHolder.imageView.setOnClickListener {
             copyImageLocation(imageLocation)
         }
+    }
+
+    fun updateData(newData: List<String>) {
+        dataListitem.clear()
+        dataListitem.addAll(newData)
+        notifyDataSetChanged()
     }
 
     private fun getBitmapFromUri(uri: String): Bitmap? {

@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>) {
             }
         }
-        val imageList = viewModel.getImageListWithDynamicPath(imagelo)
+        val imageList = viewModel.staticImageList
         val recyclerView = binding.recyclerView
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         recyclerView.layoutManager = layoutManager
@@ -153,6 +153,7 @@ class MainActivity : AppCompatActivity() {
                 if (loadedBitmap != null)
                     loadedBitmap?.let {
                         viewModel.processImageObjectDetection(it)
+                        MyAdapter(imageList,this,::copyImageLocation).updateData(viewModel.getImageListWithDynamicPath(imagelo))
                     }
                 else
                     showToast("No image loaded")

@@ -84,13 +84,13 @@ class MainViewModel : ViewModel() {
 
 
     // Static, constant list that doesn’t change across sessions
-    private val staticImageList = listOf(
+     val staticImageList = listOf(
         "damn.jpg", "emoji.png", "glass.png", "image 3.png", "image 2.png",
         "image 6.png", "image 1340.png", "image 627.png", "image 304.png",
         "image 1348.png", "image 1772.png"
-    )
+    ).toMutableList()
     // Function that generates the final list with the dynamic path
-    fun getImageListWithDynamicPath(imagelo: ImageLoader): List<String> {
+    fun getImageListWithDynamicPath(imagelo: ImageLoader): MutableList<String> {
         // Initialize a mutable list based on the static list
         val list = staticImageList.toMutableList()
 
