@@ -101,34 +101,43 @@ class MainViewModel : ViewModel() {
         return list
     }
 
-    private fun applySegmentationMask(original: Bitmap, mask: Bitmap, color: Int): Pair<Bitmap,Bitmap> {
+    private fun applySegmentationMask(original: Bitmap, mask: Bitmap, color: Int): Pair<Bitmap, Bitmap> {
         val scaledMask = Bitmap.createScaledBitmap(mask, original.width, original.height, false)
-        val resultBitmap = Bitmap.createBitmap(original.width, original.height, original.config)
-        val sticker = Bitmap.createBitmap(original.width,original.height,original.config)
-        val canvas = android.graphics.Canvas(resultBitmap)
-        val canvas2 = Canvas(sticker)
-        val paint = Paint()
-        val paint2 = Paint()
 
+        val width = original.width
+        val height = original.height
+        val resultPixels = IntArray(width * height)
+        val stickerPixels = IntArray(width * height)
 
-        for (x in 0 until original.width) {
-            for (y in 0 until original.height) {
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                val index = y * width + x
                 val maskPixel = scaledMask.getPixel(x, y)
-                if (Color.alpha(maskPixel) > 128) {
-                    paint.color = original.getPixel(x, y)
-                    paint2.color = original.getPixel(x,y)
 
-                } else {
-                    paint.color = color
-                   paint2.color = Color.TRANSPARENT
+                // Mask alpha (grayscale value) is used to determine foreground
+                val maskAlpha = Color.alpha(maskPixel)
+
+                if (maskAlpha > 128) { // Foreground
+                    val originalPixel = original.getPixel(x, y)
+
+                    // Set the pixel with maximum opacity
+                    resultPixels[index] = Color.argb(255, Color.red(originalPixel), Color.green(originalPixel), Color.blue(originalPixel))
+                    stickerPixels[index] = resultPixels[index]
+                } else { // Background
+                    resultPixels[index] = color // Use provided background color
+                    stickerPixels[index] = Color.TRANSPARENT
                 }
-                canvas.drawPoint(x.toFloat(), y.toFloat(), paint)
-                canvas2.drawPoint(x.toFloat(),y.toFloat(),paint2)
             }
         }
 
-        return Pair(resultBitmap,sticker)
+        val resultBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val sticker = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        resultBitmap.setPixels(resultPixels, 0, width, 0, 0, width, height)
+        sticker.setPixels(stickerPixels, 0, width, 0, 0, width, height)
+
+        return Pair(resultBitmap, sticker)
     }
+
 
     private fun convertByteBufferToBitmap(buffer: ByteBuffer, width: Int, height: Int): Bitmap {
         buffer.rewind() // Reset buffer to the beginning
