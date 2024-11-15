@@ -149,11 +149,19 @@ class MainActivity : AppCompatActivity() {
         }
 
 //        the view is added above the code
+        var flag = false;
             binding.button2.setOnClickListener {
                 if (loadedBitmap != null)
                     loadedBitmap?.let {
                         viewModel.processImageObjectDetection(it)
-                        MyAdapter(imageList,this,::copyImageLocation).updateData(viewModel.getImageListWithDynamicPath(imagelo))
+                        if(!flag){
+                        MyAdapter(
+                            imageList,
+                            this,
+                            ::copyImageLocation
+                        ).updateData(viewModel.getImageListWithDynamicPath(imagelo))
+                        flag = true
+                    }
                     }
                 else
                     showToast("No image loaded")
