@@ -160,8 +160,8 @@ class MainActivity : AppCompatActivity() {
                             this,
                             ::copyImageLocation
                         ).updateData(viewModel.getImageListWithDynamicPath(imagelo))
-                        flag = true
                     }
+                        flag = true
                     }
                 else
                     showToast("No image loaded")

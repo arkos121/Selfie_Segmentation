@@ -4,10 +4,8 @@ import android.content.Context
 import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Environment
 import android.util.Log
 import android.widget.ImageView
-import androidx.core.graphics.scale
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -68,7 +66,6 @@ class ImageLoader(private val context: Context) {
             val file = File(imageDir, fileName)
             FileOutputStream(file).use { out ->
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-               // out.flush()
             }
             Log.d("ImageLoader", "Saved PNG successfully at: ${file.absolutePath}")
             file.absolutePath
