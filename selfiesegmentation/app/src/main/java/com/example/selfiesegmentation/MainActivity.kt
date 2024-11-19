@@ -139,72 +139,72 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.saver.setOnClickListener{
-            imagelo.saveImageToGallery(binding.imageContainer.drawToBitmap(),this,"image-${System.currentTimeMillis()/100}")
+            imagelo.saveImageToGallery(viewModel.cropBitmap(viewModel.stickermap.value!!,viewModel.box.left,viewModel.box.top,viewModel.box.width(),viewModel.box.height()),this,"image-${System.currentTimeMillis()/100}")
 
         }
 
-        binding.emoji.setOnClickListener {
-            if (recyclerView.visibility == View.GONE) {
-                recyclerView.visibility = View.VISIBLE
-            } else {
-                recyclerView.visibility = View.GONE
-            }
-
-
-
-            fun addNewZoomableView(bitmap: Bitmap) {
-                val newImageView = ZoomableImageView(this, null).apply {
-                    id = View.generateViewId()
-                    tag = "image_${++imageCounter}"
-                    isClickable = true
-                    isLongClickable = true
-                    Log.d("ZoomableView", "Creating new view with tag: $tag")
-                }
-
-                val lp = ConstraintLayout.LayoutParams(
-                    ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
-                    ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
-                ).apply {
-                    topToTop = binding.imageContainer.id
-                    bottomToBottom = binding.imageContainer.id
-                    startToStart = binding.imageContainer.id
-                    endToEnd = binding.imageContainer.id
-                }
-
-                newImageView.layoutParams = lp
-                newImageView.setImageBitmap(bitmap)
-
-                Log.d("ZoomableView", "Adding new ImageView to container")
-                binding.imageContainer.addView(newImageView)
-                binding.imageContainer.requestLayout()
-            }
-
-            if (l != "") {
-                if (l.startsWith("/storage/") || l.startsWith("file://")) {
-                    // Pass file path directly to `loader`
-                    println("it is coming here")
-                    l = l.substringAfterLast("/")
-                    val b = imagelo.justLoad(l)
-                    println("on create $b")
-                    if (b != null) {
-                        println("is b there")
-                        addNewZoomableView(b)
-                        println("Bitmap loaded and added to ZoomableView")
-                    } else {
-                        println("Bitmap is null, failed to load image from $l")
-                    }
-                } else {
-                    // Pass asset path directly to `loader`
-                    var b = imagelo.loader(assets, l)
-                    addNewZoomableView(b!!)
-                }
-                // Only add a new view if the bitmap was successfully loaded
-//                bitmap?.let {
-//                    addNewZoomableView(it)
+//        binding.emoji.setOnClickListener {
+//            if (recyclerView.visibility == View.GONE) {
+//                recyclerView.visibility = View.VISIBLE
+//            } else {
+//                recyclerView.visibility = View.GONE
+//            }
+//
+//
+//
+//            fun addNewZoomableView(bitmap: Bitmap) {
+//                val newImageView = ZoomableImageView(this, null).apply {
+//                    id = View.generateViewId()
+//                    tag = "image_${++imageCounter}"
+//                    isClickable = true
+//                    isLongClickable = true
+//                    Log.d("ZoomableView", "Creating new view with tag: $tag")
 //                }
-                l = ""
-            }
-        }
+//
+//                val lp = ConstraintLayout.LayoutParams(
+//                    ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
+//                    ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
+//                ).apply {
+//                    topToTop = binding.imageContainer.id
+//                    bottomToBottom = binding.imageContainer.id
+//                    startToStart = binding.imageContainer.id
+//                    endToEnd = binding.imageContainer.id
+//                }
+//
+//                newImageView.layoutParams = lp
+//                newImageView.setImageBitmap(bitmap)
+//
+//                Log.d("ZoomableView", "Adding new ImageView to container")
+//                binding.imageContainer.addView(newImageView)
+//                binding.imageContainer.requestLayout()
+//            }
+//
+//            if (l != "") {
+//                if (l.startsWith("/storage/") || l.startsWith("file://")) {
+//                    // Pass file path directly to `loader`
+//                    println("it is coming here")
+//                    l = l.substringAfterLast("/")
+//                    val b = imagelo.justLoad(l)
+//                    println("on create $b")
+//                    if (b != null) {
+//                        println("is b there")
+//                        addNewZoomableView(b)
+//                        println("Bitmap loaded and added to ZoomableView")
+//                    } else {
+//                        println("Bitmap is null, failed to load image from $l")
+//                    }
+//                } else {
+//                    // Pass asset path directly to `loader`
+//                    var b = imagelo.loader(assets, l)
+//                    addNewZoomableView(b!!)
+//                }
+//                // Only add a new view if the bitmap was successfully loaded
+////                bitmap?.let {
+////                    addNewZoomableView(it)
+////                }
+//                l = ""
+//            }
+//        }
 
 //        the view is added above the code
         var flag = false
@@ -226,11 +226,11 @@ class MainActivity : AppCompatActivity() {
                 showToast("No image loaded")
         }
         binding.button3.setOnClickListener {
-            binding.emoji.visibility = View.VISIBLE
+          //  binding.emoji.visibility = View.VISIBLE
             loadedBitmap?.let {
                 viewModel.selfie_segmentation(it) // Trigger segmentation
             }
-            
+
 
 // Observe stickermap to save and retrieve when ready
             viewModel.stickermap.observe(this) { segmentedBitmap ->
@@ -393,15 +393,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-//
-//    private fun savebits(scaledBitmap: Bitmap) {
-//        val file = File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "scaled_photo.jpg")
-//        file.outputStream().use { outputStream ->
-//            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 85, outputStream) // Compress at 85% quality
-//            showToast("Photo saved to: ${file.absolutePath}")
-//            println("thre path is ${file.absolutePath}")
-//        }
-//    }
+
 
 
 }

@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Rect
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -24,6 +25,9 @@ class MainViewModel : ViewModel() {
 
     private val _stickermap = MutableLiveData<Bitmap>()
     val stickermap: LiveData<Bitmap> get() = _stickermap
+
+    private val _centered = MutableLiveData<Bitmap>()
+    val centered : LiveData<Bitmap> get() = _centered
 
     var bs : Pair<Bitmap,Bitmap> ?= null
     private val _sepiaBitmap = MutableLiveData<Bitmap>()
@@ -43,6 +47,8 @@ class MainViewModel : ViewModel() {
 
     private val _backgrounds = MutableLiveData<Bitmap>()
     val backgrounds: LiveData<Bitmap> get() = _backgrounds
+
+    lateinit var box : Rect
 
     private var objectDetectionCompletes = false
     fun selfie_segmentation(bitmap: Bitmap) {
@@ -139,7 +145,14 @@ class MainViewModel : ViewModel() {
     }
 
 
-     fun scaleDownBitmap(original: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
+    fun cropBitmap(originalBitmap: Bitmap, left: Int, top: Int, width: Int, height: Int): Bitmap {
+        return Bitmap.createBitmap(originalBitmap, left, top, width, height)
+    }
+
+
+
+
+    fun scaleDownBitmap(original: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
         val aspectRatio = original.width.toFloat() / original.height
         val scaledWidth: Int
         val scaledHeight: Int
@@ -255,7 +268,7 @@ class MainViewModel : ViewModel() {
             }
 
             for (obj in detectedObjects) {
-                val box = obj.boundingBox
+                 box = obj.boundingBox
                 val left = box.left
                 val right = box.right
                 val bottom = box.bottom
