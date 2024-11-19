@@ -139,6 +139,23 @@ class MainViewModel : ViewModel() {
     }
 
 
+     fun scaleDownBitmap(original: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
+        val aspectRatio = original.width.toFloat() / original.height
+        val scaledWidth: Int
+        val scaledHeight: Int
+
+        if (original.width > original.height) {
+            scaledWidth = maxWidth
+            scaledHeight = (maxWidth / aspectRatio).toInt()
+        } else {
+            scaledWidth = (maxHeight * aspectRatio).toInt()
+            scaledHeight = maxHeight
+        }
+
+        return Bitmap.createScaledBitmap(original, scaledWidth, scaledHeight, true)
+    }
+
+
     private fun convertByteBufferToBitmap(buffer: ByteBuffer, width: Int, height: Int): Bitmap {
         buffer.rewind() // Reset buffer to the beginning
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
