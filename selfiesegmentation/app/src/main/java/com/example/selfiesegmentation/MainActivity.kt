@@ -28,6 +28,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.selfiesegmentation.databinding.LayoutBinding
 import java.io.File
+import java.io.Serializable
 
 class MainActivity : AppCompatActivity() {
     private var imageCounter = 0
@@ -40,7 +41,7 @@ class MainActivity : AppCompatActivity() {
     private var l = ""
     private var loadedBitmap: Bitmap? = null
     private lateinit var storedimg: Bitmap
-    private val viewModel: MainViewModel by viewModels()
+    private val sharedViewModel: SharedViewModel by viewModels()
     private lateinit var binding: LayoutBinding
     private val imagelo: ImageLoader = ImageLoader(this)
     private fun showToast(s: String) {
@@ -110,7 +111,7 @@ class MainActivity : AppCompatActivity() {
 //        }
 
 
-        val imageList = viewModel.staticImageList
+        val imageList = sharedViewModel.staticImageList
         val recyclerView = binding.recyclerView
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         recyclerView.layoutManager = layoutManager
@@ -139,7 +140,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.saver.setOnClickListener{
-            imagelo.saveImageToGallery(viewModel.cropBitmap(viewModel.stickermap.value!!,viewModel.box.left,viewModel.box.top,viewModel.box.width(),viewModel.box.height()),this,"image-${System.currentTimeMillis()/100}")
+            imagelo.saveImageToGallery(sharedViewModel.cropBitmap(sharedViewModel.stickermap.value!!,sharedViewModel.box.left,sharedViewModel.box.top,sharedViewModel.box.width(),sharedViewModel.box.height()),this,"image-${System.currentTimeMillis()/100}")
 
         }
 
@@ -211,13 +212,13 @@ class MainActivity : AppCompatActivity() {
         binding.button2.setOnClickListener {
             if (loadedBitmap != null)
                 loadedBitmap?.let {
-                    viewModel.processImageObjectDetection(it)
+                    sharedViewModel.processImageObjectDetection(it)
                     if (!flag) {
                         MyAdapter(
                             imageList,
                             this,
                             ::copyImageLocation
-                        ).updateData(viewModel.getImageListWithDynamicPath(imagelo))
+                        ).updateData(sharedViewModel.getImageListWithDynamicPath(imagelo))
                         flag = true
                     }
 
@@ -228,12 +229,11 @@ class MainActivity : AppCompatActivity() {
         binding.button3.setOnClickListener {
           //  binding.emoji.visibility = View.VISIBLE
             loadedBitmap?.let {
-                viewModel.selfie_segmentation(it) // Trigger segmentation
+                sharedViewModel.selfie_segmentation(it) // Trigger segmentation
             }
 
-
 // Observe stickermap to save and retrieve when ready
-            viewModel.stickermap.observe(this) { segmentedBitmap ->
+            sharedViewModel.stickermap.observe(this) { segmentedBitmap ->
                 segmentedBitmap?.let {
                     imagelo.saveBitmapAsPNG(it, "hey") // Save the bitmap when it's available
                     println(imagelo.getImagePath("hey"))
@@ -241,6 +241,12 @@ class MainActivity : AppCompatActivity() {
             }
             binding.saver.visibility = View.VISIBLE
         }
+
+        binding.switch1.setOnClickListener{
+            val intent = Intent(this, backg_emoji::class.java)
+            startActivity(intent)
+        }
+
 //        binding.blue.setOnClickListener {
 //            loadedBitmap.let {
 //                if (it != null && viewModel.maskBitmap.value != null) {
@@ -293,22 +299,23 @@ class MainActivity : AppCompatActivity() {
 //                }
 //            }
 //        }
-        viewModel.bitmap.observe(
+        sharedViewModel.bitmap.observe(
             this,
             Observer { bitmap -> binding.imageview.setImageBitmap(bitmap) })
-        viewModel.statusMessage.observe(
+        sharedViewModel.statusMessage.observe(
             this,
             Observer { message -> binding.textView.text = message })
-        viewModel.maskBitmap.observe(
+        sharedViewModel.maskBitmap.observe(
             this,
             Observer { bitmap -> binding.imageview.setImageBitmap(bitmap) })
-        viewModel.backgrounds.observe(
+        sharedViewModel.backgrounds.observe(
             this,
             Observer { bitmap -> binding.imageview.setImageBitmap(bitmap) })
-        viewModel.bnwBitmap.observe(this) { bitmap -> binding.imageview.setImageBitmap(bitmap) }
-        viewModel.sepiaBitmap.observe(this) { bitmap -> binding.imageview.setImageBitmap(bitmap) }
+        sharedViewModel.bnwBitmap.observe(this) { bitmap -> binding.imageview.setImageBitmap(bitmap) }
+        sharedViewModel.sepiaBitmap.observe(this) { bitmap -> binding.imageview.setImageBitmap(bitmap) }
 
     }
+
 
     private fun showImageSourceDialog() {
         val options = arrayOf("Camera", "Gallery")
@@ -356,7 +363,7 @@ class MainActivity : AppCompatActivity() {
         cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
             if (success) {
                 val originalBitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(photoUri))
-                val scaledBitmap = viewModel.scaleDownBitmap(originalBitmap, 800, 800) // Scale down to 800x800 max
+                val scaledBitmap = sharedViewModel.scaleDownBitmap(originalBitmap, 800, 800) // Scale down to 800x800 max
                 binding.imageview.setImageBitmap(scaledBitmap)
                // savebits(scaledBitmap)
                 loadedBitmap = scaledBitmap
@@ -369,7 +376,7 @@ class MainActivity : AppCompatActivity() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val imageUri = result.data?.data
                 val originalBitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(imageUri!!))
-                val scaledBitmap = viewModel.scaleDownBitmap(originalBitmap, 800, 800) // Scale down to 800x800 max
+                val scaledBitmap = sharedViewModel.scaleDownBitmap(originalBitmap, 800, 800) // Scale down to 800x800 max
                 binding.imageview.setImageBitmap(scaledBitmap)
               //  savebits(scaledBitmap)
                 loadedBitmap = scaledBitmap
@@ -381,7 +388,7 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun saveFinalImageWithSticker() {
         // Assuming the image with sticker is in the ImageView
-        val finalBitmap = viewModel.stickermap.value!!// Get the current view as Bitmap
+        val finalBitmap = sharedViewModel.stickermap.value!!// Get the current view as Bitmap
         imagelo.saveImageToGallery(finalBitmap, this, "final_image") // Save the final Bitmap
     }
 

@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,7 +22,7 @@ import java.io.IOException
 import java.nio.ByteBuffer
 
 
-class MainViewModel : ViewModel() {
+class SharedViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _stickermap = MutableLiveData<Bitmap>()
     val stickermap: LiveData<Bitmap> get() = _stickermap
@@ -36,7 +37,7 @@ class MainViewModel : ViewModel() {
     private val _bnwBitmap = MutableLiveData<Bitmap>()
     val bnwBitmap: LiveData<Bitmap> get() = _bnwBitmap
 
-    private val _bitmap = MutableLiveData<Bitmap?>()
+    val _bitmap = MutableLiveData<Bitmap?>()
     val bitmap: MutableLiveData<Bitmap?> get() = _bitmap
 
     private val _statusMessage = MutableLiveData<String>()
@@ -75,6 +76,7 @@ class MainViewModel : ViewModel() {
                     _maskBitmap.value = maskBitmap
                     _bitmap.value = resultBitmap.first
                     _stickermap.value = resultBitmap.second
+                    _centered.value = resultBitmap.first
                     _statusMessage.value = "Segmentation successful!"
                 }
                 .addOnFailureListener { e ->
