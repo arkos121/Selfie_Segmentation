@@ -27,6 +27,9 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     private val _stickermap = MutableLiveData<Bitmap>()
     val stickermap: LiveData<Bitmap> get() = _stickermap
 
+    private val k = MutableLiveData<Bitmap>()
+    val kmap: LiveData<Bitmap> get() = k
+
     private val _centered = MutableLiveData<Bitmap>()
     val centered : LiveData<Bitmap> get() = _centered
 
@@ -37,8 +40,8 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     private val _bnwBitmap = MutableLiveData<Bitmap>()
     val bnwBitmap: LiveData<Bitmap> get() = _bnwBitmap
 
-    val _bitmap = MutableLiveData<Bitmap?>()
-    val bitmap: MutableLiveData<Bitmap?> get() = _bitmap
+    private val _bitmap = MutableLiveData<Bitmap?>().apply { value = null }
+    val bitmap: LiveData<Bitmap?> get() = _bitmap
 
     private val _statusMessage = MutableLiveData<String>()
     val statusMessage: LiveData<String> = _statusMessage
@@ -78,6 +81,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
                     _stickermap.value = resultBitmap.second
                     _centered.value = resultBitmap.first
                     _statusMessage.value = "Segmentation successful!"
+                    //updateBitmap(bs!!.first)
                 }
                 .addOnFailureListener { e ->
                     e.printStackTrace()
@@ -88,6 +92,11 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         }
         val endtime = System.currentTimeMillis()
         println("the time taken to remove the background is ${endtime - startime}")
+    }
+
+    fun updateBitmap(newBitmap: Bitmap?) {
+        _bitmap.value = newBitmap
+        Log.d("SharedViewModel", "Bitmap updated: $newBitmap")
     }
 
 
@@ -109,7 +118,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         return list
     }
 
-    private fun applySegmentationMask(original: Bitmap, mask: Bitmap, color: Int): Pair<Bitmap, Bitmap> {
+     private fun applySegmentationMask(original: Bitmap, mask: Bitmap, color: Int): Pair<Bitmap, Bitmap> {
         val scaledMask = Bitmap.createScaledBitmap(mask, original.width, original.height, false)
 
         val width = original.width
@@ -166,7 +175,6 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
             scaledWidth = (maxHeight * aspectRatio).toInt()
             scaledHeight = maxHeight
         }
-
         return Bitmap.createScaledBitmap(original, scaledWidth, scaledHeight, true)
     }
 
@@ -215,7 +223,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         return newBitmap
 
     }
-    fun applySepiaFilter(bitmap: Bitmap): Bitmap {
+    fun applySepiaFilter(bitmap: Bitmap): `Bitmap` {
         val startime = System.currentTimeMillis()
         val bmp = Bitmap.createBitmap(bitmap.width, bitmap.height, bitmap.config)
 
@@ -299,10 +307,12 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     fun background(bitmap: Bitmap, mask: Bitmap, color: Int) {
         var startime = System.currentTimeMillis()
         val bitmapstore = applySegmentationMask(bitmap, mask, color)
-        _bitmap.value = bitmapstore.first
+        // Update kmap with the first part of the result
+        k.value = bitmapstore.first
+
         _statusMessage.value = "Segmentation successful!"
         var endtime = System.currentTimeMillis()
-        println("the time taken to add color is ${endtime - startime}")
+        println("The time taken to add color is ${endtime - startime}")
     }
 
     fun calculateavgforeground(original: Bitmap, mask: Bitmap): Int {

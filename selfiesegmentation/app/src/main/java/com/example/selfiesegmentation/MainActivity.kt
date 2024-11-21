@@ -25,23 +25,37 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.FileProvider
 import androidx.core.view.drawToBitmap
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.selfiesegmentation.databinding.LayoutBinding
 import java.io.File
 import java.io.Serializable
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),Serializable {
     private var imageCounter = 0
     private companion object {
         const val CAMERA_PERMISSION_REQUEST_CODE = 100
     }
+    object BitmapHolder {
+        var bitmap: Bitmap? = null
+    }
+
+    object InitialHolder{
+        var bitmap : Bitmap ?= null
+    }
+
     private lateinit var cameraLauncher: ActivityResultLauncher<Uri>
     private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
     private lateinit var photoUri: Uri
     private var l = ""
     private var loadedBitmap: Bitmap? = null
+    var bits : Bitmap ?=null
     private lateinit var storedimg: Bitmap
-    private val sharedViewModel: SharedViewModel by viewModels()
+    val sharedViewModel: SharedViewModel by viewModels {
+        ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+    }
+//    private val sharedViewModel: SharedViewModel by viewModels()
     private lateinit var binding: LayoutBinding
     private val imagelo: ImageLoader = ImageLoader(this)
     private fun showToast(s: String) {
@@ -74,153 +88,38 @@ class MainActivity : AppCompatActivity() {
         binding = LayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
         super.onCreate(savedInstanceState)
+        // In your first activity
+        //sharedViewModel = ViewModelProvider(this)[SharedViewModel::class.java]
         initializeLaunchers()
-        // Store the loaded bitmap here
-        val filters = arrayOf("Default", "Original", "B&W", "Sepia")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, filters)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        //    binding.dropdown.adapter = adapter
-//        binding.dropdown.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-//            override fun onItemSelected(
-//                parent: AdapterView<*>?,
-//                view: View?,
-//                position: Int,
-//                id: Long
-//            ) {
-//                val selectedFilter = filters[position]
-//                when (selectedFilter) {
-//                    "Original" -> if (::storedimg.isInitialized) {
-//                        viewModel.bitmap.value = storedimg
-//                        binding.imageview.setImageBitmap(storedimg)
-//                    } else {
-//                        showToast("No image loaded")
-//                    }
-//
-//                    "B&W" -> viewModel.bitmap.value.let {
-//                        viewModel.applyBlackAndWhiteFilter(it!!)
-//                    }
-//
-//                    "Sepia" -> viewModel.bitmap.value.let {
-//                        viewModel.applySepiaFilter(it!!)
-//                    }
-//                }
-//            }
-//
-//            override fun onNothingSelected(parent: AdapterView<*>) {
-//            }
-//        }
 
-
-        val imageList = sharedViewModel.staticImageList
-        val recyclerView = binding.recyclerView
-        val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        recyclerView.layoutManager = layoutManager
-        recyclerView.adapter = MyAdapter(imageList, this, ::copyImageLocation)
-
-//            val z = imagelo.loader(assets,"photo1.jpg")
-//            loadedBitmap = z
-//            storedimg = z!!
-//            binding.imageview.setImageBitmap(z)
+//        val imageList = sharedViewModel.staticImageList
+//        val recyclerView = binding.recyclerView
+//        val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+//        recyclerView.layoutManager = layoutManager
+//        recyclerView.adapter = MyAdapter(imageList, this, ::copyImageLocation)
             binding.button1.setOnClickListener {
-//                val options = arrayOf("Camera", "Gallery")
-//                val builder = AlertDialog.Builder(this)
-//                builder.setTitle("Choose an option")
-//                builder.setItems(options) { _, which ->
-//                    when (which) {
-//                        0 -> openCamera()
-//                        1 -> openGallery()
-//                    }
-//                }
-//                builder.show()
-//            }
                 showImageSourceDialog()
-
-
-
         }
-
         binding.saver.setOnClickListener{
+            imagelo.saveBitmapAsPNG(sharedViewModel.cropBitmap(sharedViewModel.stickermap.value!!,sharedViewModel.box.left,sharedViewModel.box.top,sharedViewModel.box.width(),sharedViewModel.box.height()),"stick")
             imagelo.saveImageToGallery(sharedViewModel.cropBitmap(sharedViewModel.stickermap.value!!,sharedViewModel.box.left,sharedViewModel.box.top,sharedViewModel.box.width(),sharedViewModel.box.height()),this,"image-${System.currentTimeMillis()/100}")
-
         }
 
-//        binding.emoji.setOnClickListener {
-//            if (recyclerView.visibility == View.GONE) {
-//                recyclerView.visibility = View.VISIBLE
-//            } else {
-//                recyclerView.visibility = View.GONE
-//            }
-//
-//
-//
-//            fun addNewZoomableView(bitmap: Bitmap) {
-//                val newImageView = ZoomableImageView(this, null).apply {
-//                    id = View.generateViewId()
-//                    tag = "image_${++imageCounter}"
-//                    isClickable = true
-//                    isLongClickable = true
-//                    Log.d("ZoomableView", "Creating new view with tag: $tag")
-//                }
-//
-//                val lp = ConstraintLayout.LayoutParams(
-//                    ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
-//                    ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
-//                ).apply {
-//                    topToTop = binding.imageContainer.id
-//                    bottomToBottom = binding.imageContainer.id
-//                    startToStart = binding.imageContainer.id
-//                    endToEnd = binding.imageContainer.id
-//                }
-//
-//                newImageView.layoutParams = lp
-//                newImageView.setImageBitmap(bitmap)
-//
-//                Log.d("ZoomableView", "Adding new ImageView to container")
-//                binding.imageContainer.addView(newImageView)
-//                binding.imageContainer.requestLayout()
-//            }
-//
-//            if (l != "") {
-//                if (l.startsWith("/storage/") || l.startsWith("file://")) {
-//                    // Pass file path directly to `loader`
-//                    println("it is coming here")
-//                    l = l.substringAfterLast("/")
-//                    val b = imagelo.justLoad(l)
-//                    println("on create $b")
-//                    if (b != null) {
-//                        println("is b there")
-//                        addNewZoomableView(b)
-//                        println("Bitmap loaded and added to ZoomableView")
-//                    } else {
-//                        println("Bitmap is null, failed to load image from $l")
-//                    }
-//                } else {
-//                    // Pass asset path directly to `loader`
-//                    var b = imagelo.loader(assets, l)
-//                    addNewZoomableView(b!!)
-//                }
-//                // Only add a new view if the bitmap was successfully loaded
-////                bitmap?.let {
-////                    addNewZoomableView(it)
-////                }
-//                l = ""
-//            }
-//        }
 
 //        the view is added above the code
-        var flag = false
+//        var flag = false
         binding.button2.setOnClickListener {
             if (loadedBitmap != null)
                 loadedBitmap?.let {
                     sharedViewModel.processImageObjectDetection(it)
-                    if (!flag) {
-                        MyAdapter(
-                            imageList,
-                            this,
-                            ::copyImageLocation
-                        ).updateData(sharedViewModel.getImageListWithDynamicPath(imagelo))
-                        flag = true
-                    }
+//                    if (!flag) {
+//                        MyAdapter(
+//                            imageList,
+//                            this,
+//                            ::copyImageLocation
+//                        ).updateData(sharedViewModel.getImageListWithDynamicPath(imagelo))
+//                        flag = true
+//                    }
 
                 }
             else
@@ -239,66 +138,23 @@ class MainActivity : AppCompatActivity() {
                     println(imagelo.getImagePath("hey"))
                 }
             }
+//
+//            sharedViewModel.bitmap.observe(this){r->
+//                r?.let{
+//                    imagelo.saveBitmapAsPNG(it,"why")
+//                    println(imagelo.getImagePath("why"))
+//                }
+//            }
+
             binding.saver.visibility = View.VISIBLE
         }
-
         binding.switch1.setOnClickListener{
+            bits = getBitmapFromView(binding.imageview)
+            sharedViewModel.updateBitmap(bits)
+            BitmapHolder.bitmap = sharedViewModel.bitmap.value
             val intent = Intent(this, backg_emoji::class.java)
             startActivity(intent)
         }
-
-//        binding.blue.setOnClickListener {
-//            loadedBitmap.let {
-//                if (it != null && viewModel.maskBitmap.value != null) {
-//                    viewModel.background(it, viewModel.maskBitmap.value!!, BLUE)
-//                    showToast("Blue BackgroundAdded")
-//                } else
-//                    showToast("Mask is missing!")
-//            }
-//        }
-//        binding.purple.setOnClickListener {
-//            loadedBitmap.let {
-//                if (it != null && viewModel.maskBitmap.value != null) {
-//                    viewModel.background(it, viewModel.maskBitmap.value!!, Color.MAGENTA)
-//                    showToast("Purple BackgroundAdded")
-//                } else
-//                    showToast("Mask is missing!")
-//            }
-//        }
-//
-//        binding.red.setOnClickListener {
-//            loadedBitmap.let {
-//                if (it != null && viewModel.maskBitmap.value != null) {
-//                    viewModel?.background(it, viewModel.maskBitmap.value!!, Color.RED)
-//                    showToast("Red BackgroundAdded")
-//                } else
-//                    showToast("Mask is missing!")
-//            }
-//        }
-//        binding.yellow.setOnClickListener {
-//            loadedBitmap?.let {
-//                if (viewModel.maskBitmap.value != null) {
-//                    viewModel.background(
-//                        it,
-//                        viewModel.maskBitmap.value!!,
-//                        viewModel.calculateavgforeground(it, viewModel.maskBitmap.value!!)
-//                    )
-//                    showToast("Contrasting color")
-//                } else
-//                    showToast("Mask is missing!")
-//            }
-//        }
-//        binding.image.setOnClickListener {
-//            loadedBitmap?.let {
-//                if (viewModel.maskBitmap.value != null) {
-//                    viewModel.setBackground(assets, "damn.jpg")
-//                    viewModel.applyNewBackground(loadedBitmap!!, viewModel.maskBitmap.value!!)
-//                    showToast("Image bg added")
-//                } else {
-//                    showToast("Mask is missing")
-//                }
-//            }
-//        }
         sharedViewModel.bitmap.observe(
             this,
             Observer { bitmap -> binding.imageview.setImageBitmap(bitmap) })
@@ -308,9 +164,9 @@ class MainActivity : AppCompatActivity() {
         sharedViewModel.maskBitmap.observe(
             this,
             Observer { bitmap -> binding.imageview.setImageBitmap(bitmap) })
-        sharedViewModel.backgrounds.observe(
-            this,
-            Observer { bitmap -> binding.imageview.setImageBitmap(bitmap) })
+//        sharedViewModel.backgrounds.observe(
+//            this,
+//            Observer { bitmap -> binding.imageview.setImageBitmap(bitmap) })
         sharedViewModel.bnwBitmap.observe(this) { bitmap -> binding.imageview.setImageBitmap(bitmap) }
         sharedViewModel.sepiaBitmap.observe(this) { bitmap -> binding.imageview.setImageBitmap(bitmap) }
 
@@ -367,6 +223,7 @@ class MainActivity : AppCompatActivity() {
                 binding.imageview.setImageBitmap(scaledBitmap)
                // savebits(scaledBitmap)
                 loadedBitmap = scaledBitmap
+                InitialHolder.bitmap = scaledBitmap
             }
         }
 
@@ -380,6 +237,7 @@ class MainActivity : AppCompatActivity() {
                 binding.imageview.setImageBitmap(scaledBitmap)
               //  savebits(scaledBitmap)
                 loadedBitmap = scaledBitmap
+                InitialHolder.bitmap = scaledBitmap
             }
         }
 

@@ -63,17 +63,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <ImageView
-            android:id="@+id/imageview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="/image_description"
-            android:scaleType="fitCenter"
-            app:layout_constraintBottom_toBottomOf="@id/imageContainer"
-            app:layout_constraintEnd_toEndOf="@id/imageContainer"
-            app:layout_constraintStart_toStartOf="@id/imageContainer"
-            app:layout_constraintTop_toTopOf="@id/imageContainer" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <ImageView
+        android:id="@+id/imageview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="/image_description"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="@id/imageContainer"
+        app:layout_constraintEnd_toEndOf="@id/imageContainer"
+        app:layout_constraintStart_toStartOf="@id/imageContainer"
+        app:layout_constraintTop_toTopOf="@id/imageContainer" />
     <!--    <com.example.selfiesegmentation.ZoomableImageView-->
     <!--        android:id="@+id/zoomableImageView"-->
     <!--        android:layout_width="0dp"-->

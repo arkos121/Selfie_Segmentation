@@ -30,7 +30,7 @@
         tools:targetApi="31">
         <activity
             android:name=".backg_emoji"
-            android:exported="false" />
+            android:exported="true" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -49,7 +49,6 @@
             android:theme="@style/Theme.SelfieSegmentation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
