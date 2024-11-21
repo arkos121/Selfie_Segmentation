@@ -49,15 +49,11 @@ class ImageLoader(private val context: Context) {
                 return null
             }
 
-            // Resize to exact dimensions
-            val resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, 200, 200, true)
+            // Save the original version (if needed)
+            saveBitmapAsPNG(originalBitmap, fileName)
 
-            // Save the resized version
-            saveBitmapAsPNG(resizedBitmap, fileName)
-
-
-            Log.d("ImageLoader", "Image loaded and resized successfully at: ${file.absolutePath}")
-            resizedBitmap
+            Log.d("ImageLoader", "Image loaded successfully at: ${file.absolutePath}")
+            originalBitmap
         } catch (e: Exception) {
             Log.e("ImageLoader", "Error loading image", e)
             null
