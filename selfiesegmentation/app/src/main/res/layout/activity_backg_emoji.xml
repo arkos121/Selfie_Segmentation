@@ -32,6 +32,17 @@
 
     <!-- RecyclerView for Stickers -->
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/savefinal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="188dp"
+        android:clickable="true"
+        android:src="@drawable/save_24dp_e8eaed_fill0_wght400_grad0_opsz24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/changeBackgroundButton" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/canvas"
         android:layout_width="300dp"
@@ -70,22 +81,25 @@
         android:id="@+id/changeBackgroundButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="52dp"
         android:contentDescription="Change Background"
+        app:backgroundTint="#4527A0"
         app:layout_constraintEnd_toStartOf="@+id/toggleStickersButton"
+        app:layout_constraintHorizontal_bias="0.592"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/canvas"
-        app:srcCompat="@android:drawable/ic_menu_gallery" />
+        app:srcCompat="@drawable/background_replace_24dp_e8eaed_fill0_wght400_grad0_opsz24" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/toggleStickersButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="120dp"
+        android:layout_marginTop="52dp"
+        android:layout_marginEnd="104dp"
         android:contentDescription="Toggle Stickers"
+        app:backgroundTint="#1565C0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/canvas"
-        app:srcCompat="@android:drawable/ic_menu_add" />
+        app:srcCompat="@drawable/ar_stickers_24dp_e8eaed_fill0_wght400_grad0_opsz24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

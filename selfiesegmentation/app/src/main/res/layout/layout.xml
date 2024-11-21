@@ -22,9 +22,13 @@
 
     <Button
         android:id="@+id/button3"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="56dp"
+        android:background="#FFEB3B"
+        android:fontFamily="sans-serif"
+        android:foregroundTint="#1CA1DD"
         android:text="Segment Selfie"
         app:layout_constraintBottom_toTopOf="@+id/button1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,7 +41,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="100dp"
+        android:background="@color/black"
         android:text="Upload IMAGE"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toStartOf="@+id/button2"
         app:layout_constraintHorizontal_bias="0.5"
@@ -48,6 +54,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="100dp"
+        android:background="@color/black"
+        android:textColor="@color/white"
         android:text="Process Image"
         app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
@@ -131,26 +139,27 @@
         app:layout_constraintBottom_toTopOf="@id/button3"
         />
 
-    <Button
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/saver"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
-
+        android:src="@drawable/save_24dp_e8eaed_fill0_wght400_grad0_opsz24"
         android:text="Save"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
         android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"></Button>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/switch1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="176dp"
         android:layout_marginTop="50dp"
         android:clickable="true"
+        android:src="@drawable/arrow"
         app:layout_constraintBottom_toTopOf="@+id/button3"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline"
         app:layout_constraintVertical_bias="0.0"

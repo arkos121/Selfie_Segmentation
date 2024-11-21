@@ -2,23 +2,24 @@ package com.example.selfiesegmentation
 
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.Color.BLUE
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.selfiesegmentation.databinding.ActivityBackgEmojiBinding
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.drawToBitmap
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 
 class backg_emoji : AppCompatActivity() {
-
 
     private lateinit var binding: ActivityBackgEmojiBinding
     private val sharedViewModel: SharedViewModel by viewModels()
@@ -33,6 +34,7 @@ class backg_emoji : AppCompatActivity() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBackgEmojiBinding.inflate(layoutInflater)
@@ -41,6 +43,15 @@ class backg_emoji : AppCompatActivity() {
         setupCanvas()
         setupRecyclerView()
         setupBackgroundOptions()
+        setupSave()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun setupSave() {
+        binding.savefinal.setOnClickListener{
+            imagelo.saveBitmapAsPNG(binding.canvas.drawToBitmap(), "final-image-${System.currentTimeMillis() / 100}")
+            imagelo.saveImageToGallery(binding.canvas.drawToBitmap(), this, "final-${System.currentTimeMillis()}")
+        }
     }
 
 
@@ -144,6 +155,8 @@ if(!fl) {
         }
     }
 
+
+
     private fun selectImageBackg() {
         // Simulate picking an image (modify with real implementation if needed)
         val selectedImage = imagelo.loader(assets, "damn.jpg")
@@ -172,6 +185,7 @@ if(!fl) {
     private fun showToast(msg: String) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
+
 
     }
 
