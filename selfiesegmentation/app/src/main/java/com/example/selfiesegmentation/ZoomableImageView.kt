@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
+import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatImageView
 
 class ZoomableImageView(context: Context, attrs: AttributeSet?) : AppCompatImageView(context, attrs) {
@@ -58,6 +59,11 @@ class ZoomableImageView(context: Context, attrs: AttributeSet?) : AppCompatImage
                 imageMatrix = matrix
                 invalidate()
                 return true
+            }
+
+            override fun onLongPress(e: MotionEvent) {
+                // Remove the view on long press
+                (parent as? ViewGroup)?.removeView(this@ZoomableImageView)
             }
         })
     }
