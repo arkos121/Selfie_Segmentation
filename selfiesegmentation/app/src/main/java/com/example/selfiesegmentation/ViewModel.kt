@@ -24,6 +24,7 @@ import java.nio.ByteBuffer
 
 class SharedViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val imagelo: ImageLoader = ImageLoader(application)
     private val _stickermap = MutableLiveData<Bitmap>()
     val stickermap: LiveData<Bitmap> get() = _stickermap
 
@@ -101,7 +102,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
 
 
     // Static, constant list that doesn’t change across sessions
-     val staticImageList = listOf(
+     var staticImageList = listOf(
         "damn.jpg", "emoji.png", "glass.png", "image 3.png", "image 2.png",
         "image 6.png", "image 1340.png", "image 627.png", "image 304.png",
         "image 1348.png", "image 1772.png"
@@ -112,9 +113,10 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         val list = staticImageList.toMutableList()
 
         // Add the dynamic path from imagelo.getImagePath("hey") if it’s available
-        imagelo.getImagePath("hey")?.let {
-            list.add(0, it) // Add at the beginning, or adjust as needed
-        }
+//        imagelo.getImagePath("stick").let {it->
+          //  list.add(0, it) // Add at the beginning, or adjust as needed
+            list.add(0,imagelo.getImagePath("stick"))
+        //}
         return list
     }
 

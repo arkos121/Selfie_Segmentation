@@ -56,10 +56,11 @@ class backg_emoji : AppCompatActivity() {
         recyclerView.layoutManager = layoutManager
       //copyImageLocation(imagelo.getImagePath("stick"))
 
-
-        recyclerView.adapter = MyAdapter(imageList, this, ::copyImageLocation)
+        val lis = sharedViewModel.getImageListWithDynamicPath(imagelo)
+        recyclerView.adapter = MyAdapter(lis, this, ::copyImageLocation)
 
         binding.toggleStickersButton.setOnClickListener {
+
             binding.recyclerView.visibility =
                 if (binding.recyclerView.visibility == View.GONE) View.VISIBLE else View.GONE
 
@@ -116,23 +117,30 @@ class backg_emoji : AppCompatActivity() {
                     l = ""
                 }
             }
-
-
         }
 
 
-
+var fl = false
+    //var imageList = sharedViewModel.staticImageList
     private fun setupBackgroundOptions() {
         binding.changeBackgroundButton.setOnClickListener {
-            val options = arrayOf("Color", "Image")
-            val builder = AlertDialog.Builder(this)
-            builder.setTitle("Select Background")
-            builder.setItems(options) { _, which ->
-                when (which) {
-                    0 -> showColorPicker()
-                    1 -> selectImageBackg()
-                }
-            }.show()
+if(!fl) {
+    MyAdapter(
+        sharedViewModel.getImageListWithDynamicPath(imagelo),
+        this,
+        ::copyImageLocation
+    )
+    val options = arrayOf("Color", "Image")
+    val builder = AlertDialog.Builder(this)
+    builder.setTitle("Select Background")
+    builder.setItems(options) { _, which ->
+        when (which) {
+            0 -> showColorPicker()
+            1 -> selectImageBackg()
+        }
+    }.show()
+}
+            fl = true
         }
     }
 
