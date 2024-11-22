@@ -53,7 +53,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     private val _backgrounds = MutableLiveData<Bitmap>()
     val backgrounds: LiveData<Bitmap> get() = _backgrounds
 
-    lateinit var box : Rect
+    lateinit var boxs : Rect
 
     private var objectDetectionCompletes = false
     fun selfie_segmentation(bitmap: Bitmap) {
@@ -251,60 +251,91 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         return bmp
     }
 
+    private fun areBoxesOverlapping(box1: Rect, box2: Rect): Boolean {
+        val overlapLeft = maxOf(box1.left, box2.left)
+        val overlapTop = maxOf(box1.top, box2.top)
+        val overlapRight = minOf(box1.right, box2.right)
+        val overlapBottom = minOf(box1.bottom, box2.bottom)
+
+        return overlapLeft < overlapRight && overlapTop < overlapBottom
+    }
+
     fun processImageObjectDetection(bitmap: Bitmap) {
-        val startime = System.currentTimeMillis()
+        val startTime = System.currentTimeMillis()
         val options = ObjectDetectorOptions.Builder()
             .setDetectorMode(ObjectDetectorOptions.SINGLE_IMAGE_MODE)
             .enableMultipleObjects()
             .enableClassification()
             .build()
 
-        val objectdetector = ObjectDetection.getClient(options)
-
+        val objectDetector = ObjectDetection.getClient(options)
         val inputImage = InputImage.fromBitmap(bitmap, 0)
 
-        objectdetector.process(inputImage).addOnSuccessListener { detectedObjects ->
+        objectDetector.process(inputImage)
+            .addOnSuccessListener { detectedObjects ->
+                if (detectedObjects.isEmpty()) {
+                    _statusMessage.value = "ObjectDetection Failed"
+                    return@addOnSuccessListener
+                }
 
-            if(detectedObjects.isEmpty()){
-                _statusMessage.value = "ObjectDetection Failed"
-                return@addOnSuccessListener
+                objectDetectionCompletes = true
+
+                val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
+                val canvas = android.graphics.Canvas(mutableBitmap)
+                val paint = Paint().apply {
+                    color = Color.RED
+                    strokeWidth = 8f
+                    style = Paint.Style.STROKE
+                }
+
+                val detectedBoxes = mutableListOf<Rect>()
+                var largestBox: Rect? = null
+                var maxArea = 0
+
+                for (obj in detectedObjects) {
+                    val box = obj.boundingBox
+
+                    // Check for overlapping or duplicates
+                    if (detectedBoxes.none { existingBox -> areBoxesOverlapping(existingBox, box) }) {
+                        detectedBoxes.add(box)
+                        canvas.drawRect(box, paint)
+
+                        // Calculate the area of the current box
+                        val area = box.width() * box.height()
+                        if (area > maxArea) {
+                            maxArea = area
+                            largestBox = box
+                        }
+
+                        Log.d(
+                            "ObjectDetection",
+                            "Bounding Box: left=${box.left}, top=${box.top}, right=${box.right}, bottom=${box.bottom}"
+                        )
+                    }
+                }
+
+                // Store the largest box
+                if (largestBox != null) {
+                    boxs = largestBox
+                    Log.d(
+                        "ObjectDetection",
+                        "Largest Box: left=${boxs.left}, top=${boxs.top}, right=${boxs.right}, bottom=${boxs.bottom}"
+                    )
+                }
+
+                _bitmap.value = mutableBitmap
+                _statusMessage.value = "ObjectDetection Found"
             }
-
-            objectDetectionCompletes = true
-            val mutableBitMap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
-            val canvas = android.graphics.Canvas(mutableBitMap)
-            val paint = Paint().apply {
-                color = Color.RED
-                strokeWidth = 8f
-                style = Paint.Style.STROKE
-            }
-
-            for (obj in detectedObjects) {
-                 box = obj.boundingBox
-                val left = box.left
-                val right = box.right
-                val bottom = box.bottom
-                val up = box.top
-
-                canvas.drawRect(box, paint)
-                Log.d(
-                    "ObjectDetection",
-                    "Bounding Box: left=$left, up=$up, right=$right, bottom=$bottom"
-                )
-
-                _bitmap.value = mutableBitMap
-                _statusMessage.value = "ObjectDetectionFound"
-            }
-        }
             .addOnFailureListener { e ->
                 Log.d("TAG", "ObjectDetection Failed")
                 e.printStackTrace()
                 _statusMessage.value = "ObjectDetection has Failed"
-
             }
-        val endtime = System.currentTimeMillis()
-        println("the time taken to detect the object is ${endtime - startime}")
+
+        val endTime = System.currentTimeMillis()
+        println("The time taken to detect the object is ${endTime - startTime} ms")
     }
+
 
     fun background(bitmap: Bitmap, mask: Bitmap, color: Int) {
         var startime = System.currentTimeMillis()

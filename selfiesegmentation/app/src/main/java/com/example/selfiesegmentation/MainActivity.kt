@@ -88,61 +88,29 @@ class MainActivity : AppCompatActivity(),Serializable {
         binding = LayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
         super.onCreate(savedInstanceState)
-        // In your first activity
-        //sharedViewModel = ViewModelProvider(this)[SharedViewModel::class.java]
         initializeLaunchers()
 
-//        val imageList = sharedViewModel.staticImageList
-//        val recyclerView = binding.recyclerView
-//        val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-//        recyclerView.layoutManager = layoutManager
-//        recyclerView.adapter = MyAdapter(imageList, this, ::copyImageLocation)
             binding.button1.setOnClickListener {
                 showImageSourceDialog()
         }
         binding.saver.setOnClickListener{
-            imagelo.saveImageToGallery(sharedViewModel.cropBitmap(sharedViewModel.stickermap.value!!,sharedViewModel.box.left,sharedViewModel.box.top,sharedViewModel.box.width(),sharedViewModel.box.height()),this,"image-${System.currentTimeMillis()/100}")
-            imagelo.saveBitmapAsPNG(sharedViewModel.cropBitmap(sharedViewModel.stickermap.value!!,sharedViewModel.box.left,sharedViewModel.box.top,sharedViewModel.box.width(),sharedViewModel.box.height()),"stick")
+            imagelo.saveImageToGallery(sharedViewModel.cropBitmap(sharedViewModel.stickermap.value!!,sharedViewModel.boxs.left,sharedViewModel.boxs.top,sharedViewModel.boxs.width(),sharedViewModel.boxs.height()),this,"image-${System.currentTimeMillis()/100}")
+            imagelo.saveBitmapAsPNG(sharedViewModel.cropBitmap(sharedViewModel.stickermap.value!!,sharedViewModel.boxs.left,sharedViewModel.boxs.top,sharedViewModel.boxs.width(),sharedViewModel.boxs.height()),"stick")
             println("the path is ${imagelo.getImagePath("stick")}")
         }
 
-
-//        the view is added above the code
-//        var flag = false
         binding.button2.setOnClickListener {
             if (loadedBitmap != null)
                 loadedBitmap?.let {
                     sharedViewModel.processImageObjectDetection(it)
-//                    if (!flag) {
-//                        MyAdapter(
-//                            imageList,
-//                            this,
-//                            ::copyImageLocation
-//                        ).updateData(sharedViewModel.getImageListWithDynamicPath(imagelo))
-//                        flag = true
-//                    }
-
                 }
             else
                 showToast("No image loaded")
         }
-        var flag = false
         binding.button3.setOnClickListener {
-
-          //  binding.emoji.visibility = View.VISIBLE
 
             loadedBitmap?.let {
                 sharedViewModel.selfie_segmentation(it)
-           //
-               // println(imagelo.getImagePath("stick"))
-//                if(!flag){
-//                    MyAdapter(
-//                        sharedViewModel.getImageListWithDynamicPath(imagelo),
-//                        this,
-//                        ::copyImageLocation
-//                    )
-//                }
-//                flag = true
             }
 
 // Observe stickermap to save and retrieve when ready
@@ -152,13 +120,6 @@ class MainActivity : AppCompatActivity(),Serializable {
                     println(imagelo.getImagePath("hey"))
                 }
             }
-//
-//            sharedViewModel.bitmap.observe(this){r->
-//                r?.let{
-//                    imagelo.saveBitmapAsPNG(it,"why")
-//                    println(imagelo.getImagePath("why"))
-//                }
-//            }
 
             binding.saver.visibility = View.VISIBLE
         }
