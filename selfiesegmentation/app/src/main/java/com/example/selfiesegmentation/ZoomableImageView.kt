@@ -9,6 +9,7 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatImageView
 
 class ZoomableImageView(context: Context, attrs: AttributeSet?) : AppCompatImageView(context, attrs) {
@@ -63,7 +64,16 @@ class ZoomableImageView(context: Context, attrs: AttributeSet?) : AppCompatImage
 
             override fun onLongPress(e: MotionEvent) {
                 // Remove the view on long press
-                (parent as? ViewGroup)?.removeView(this@ZoomableImageView)
+              val builder : AlertDialog.Builder = AlertDialog.Builder(context)
+                builder
+                    .setMessage("Are you sure you want to delete this image?")
+                    .setTitle("Are you sure?")
+                    .setPositiveButton("Yes") { _, _ ->
+                        val parent = parent as? ViewGroup
+                        parent?.removeView(this@ZoomableImageView)
+                    }
+                    .setNegativeButton("No", null)
+                builder.create().show()
             }
         })
     }
