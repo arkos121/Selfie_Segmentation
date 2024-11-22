@@ -33,7 +33,6 @@ import java.io.File
 import java.io.Serializable
 
 class MainActivity : AppCompatActivity(),Serializable {
-    private var imageCounter = 0
     private companion object {
         const val CAMERA_PERMISSION_REQUEST_CODE = 100
     }
@@ -44,7 +43,6 @@ class MainActivity : AppCompatActivity(),Serializable {
     object InitialHolder{
         var bitmap : Bitmap ?= null
     }
-
     private lateinit var cameraLauncher: ActivityResultLauncher<Uri>
     private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
     private lateinit var photoUri: Uri
@@ -60,12 +58,6 @@ class MainActivity : AppCompatActivity(),Serializable {
     private val imagelo: ImageLoader = ImageLoader(this)
     private fun showToast(s: String) {
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun copyImageLocation(imageloc: String): String {
-        Log.d("ImageLocation", "Clicked on image: $imageloc")
-        l = imageloc
-        return l
     }
 
     override fun onRequestPermissionsResult(
@@ -90,6 +82,8 @@ class MainActivity : AppCompatActivity(),Serializable {
         super.onCreate(savedInstanceState)
         initializeLaunchers()
 
+
+          binding.original.setImageBitmap(InitialHolder.bitmap)
             binding.button1.setOnClickListener {
                 showImageSourceDialog()
         }
@@ -99,29 +93,34 @@ class MainActivity : AppCompatActivity(),Serializable {
             println("the path is ${imagelo.getImagePath("stick")}")
         }
 
-        binding.button2.setOnClickListener {
+//        binding.button2.setOnClickListener {
+//
+//        }
+        binding.button3.setOnClickListener {
+            var f = false
             if (loadedBitmap != null)
                 loadedBitmap?.let {
                     sharedViewModel.processImageObjectDetection(it)
+                    f = true
                 }
-            else
+            else {
                 showToast("No image loaded")
-        }
-        binding.button3.setOnClickListener {
-
-            loadedBitmap?.let {
-                sharedViewModel.selfie_segmentation(it)
             }
+            if(f) {
+                loadedBitmap?.let {
+                    sharedViewModel.selfie_segmentation(it)
+                }
 
 // Observe stickermap to save and retrieve when ready
-            sharedViewModel.stickermap.observe(this) { segmentedBitmap ->
-                segmentedBitmap?.let {
-                    imagelo.saveBitmapAsPNG(it, "hey") // Save the bitmap when it's available
-                    println(imagelo.getImagePath("hey"))
+                sharedViewModel.stickermap.observe(this) { segmentedBitmap ->
+                    segmentedBitmap?.let {
+                        imagelo.saveBitmapAsPNG(it, "hey") // Save the bitmap when it's available
+                        println(imagelo.getImagePath("hey"))
+                    }
                 }
-            }
 
-            binding.saver.visibility = View.VISIBLE
+                binding.saver.visibility = View.VISIBLE
+            }
         }
         binding.switch1.setOnClickListener{
             bits = getBitmapFromView(binding.imageview)
@@ -198,6 +197,7 @@ class MainActivity : AppCompatActivity(),Serializable {
                 binding.imageview.setImageBitmap(scaledBitmap)
                // savebits(scaledBitmap)
                 loadedBitmap = scaledBitmap
+                binding.original.setImageBitmap(loadedBitmap)
                 InitialHolder.bitmap = scaledBitmap
             }
         }
@@ -212,17 +212,11 @@ class MainActivity : AppCompatActivity(),Serializable {
                 binding.imageview.setImageBitmap(scaledBitmap)
               //  savebits(scaledBitmap)
                 loadedBitmap = scaledBitmap
+                binding.original.setImageBitmap(loadedBitmap)
                 InitialHolder.bitmap = scaledBitmap
             }
         }
 
-    }
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private fun saveFinalImageWithSticker() {
-        // Assuming the image with sticker is in the ImageView
-        val finalBitmap = sharedViewModel.stickermap.value!!// Get the current view as Bitmap
-        imagelo.saveImageToGallery(finalBitmap, this, "final_image") // Save the final Bitmap
     }
 
     private fun getBitmapFromView(view: View): Bitmap {
@@ -231,9 +225,5 @@ class MainActivity : AppCompatActivity(),Serializable {
         view.draw(canvas) // Draw the view into the canvas
         return bitmap
     }
-
-
-
-
 
 }

@@ -323,7 +323,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
                     )
                 }
 
-                _bitmap.value = mutableBitmap
+             //   _bitmap.value = mutableBitmap
                 _statusMessage.value = "ObjectDetection Found"
             }
             .addOnFailureListener { e ->

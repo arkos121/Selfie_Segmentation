@@ -25,73 +25,41 @@
 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="56dp"
+        android:layout_marginBottom="88dp"
         android:background="#FFEB3B"
         android:fontFamily="sans-serif"
         android:foregroundTint="#1CA1DD"
-        android:text="Segment Selfie"
-        app:layout_constraintBottom_toTopOf="@+id/button1"
+        android:text="Segment"
+        app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline"
-        app:layout_constraintVertical_bias="0.598" />
+        app:layout_constraintHorizontal_bias="0.516"
+        app:layout_constraintStart_toEndOf="@+id/button1" />
 
     <Button
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="100dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginBottom="88dp"
         android:background="@color/black"
         android:text="Upload IMAGE"
         android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/textView"
-        app:layout_constraintEnd_toStartOf="@+id/button2"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="100dp"
-        android:background="@color/black"
-        android:textColor="@color/white"
-        android:text="Process Image"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/button1" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/imageContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
     <ImageView
         android:id="@+id/imageview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="309dp"
+        android:layout_height="181dp"
+        android:layout_marginTop="28dp"
         android:contentDescription="/image_description"
         android:scaleType="fitCenter"
-        app:layout_constraintBottom_toBottomOf="@id/imageContainer"
-        app:layout_constraintEnd_toEndOf="@id/imageContainer"
-        app:layout_constraintStart_toStartOf="@id/imageContainer"
-        app:layout_constraintTop_toTopOf="@id/imageContainer" />
-    <!--    <com.example.selfiesegmentation.ZoomableImageView-->
-    <!--        android:id="@+id/zoomableImageView"-->
-    <!--        android:layout_width="0dp"-->
-    <!--        android:layout_height="0dp"-->
-    <!--        android:scaleType="matrix"-->
-    <!--        app:layout_constraintLeft_toLeftOf="@id/imageview"-->
-    <!--        app:layout_constraintRight_toRightOf="@id/imageview"-->
-    <!--        app:layout_constraintTop_toTopOf="@id/imageview"-->
-    <!--        app:layout_constraintBottom_toBottomOf="@id/imageview"-->
-    <!--        />-->
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.529"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView3"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/textView"
@@ -107,7 +75,7 @@
         android:id="@+id/group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="button3,button1,button2" />
+        app:constraint_referenced_ids="button3,button1" />
 
 
     <androidx.constraintlayout.widget.Group
@@ -125,19 +93,9 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintGuide_begin="283dp"
+        app:layout_constraintGuide_begin="464dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/imageContainer"
-        app:layout_constraintBottom_toTopOf="@id/button3"
-        />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/saver"
@@ -149,6 +107,7 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.467"
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -160,9 +119,20 @@
         android:src="@drawable/arrow"
         app:layout_constraintBottom_toTopOf="@+id/button3"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.467"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintVertical_bias="1.0"
         tools:srcCompat="@drawable/arrow" />
+
+    <ImageView
+        android:id="@+id/original"
+        android:layout_width="309dp"
+        android:layout_height="181dp"
+        android:layout_marginTop="28dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/screen_background_light_transparent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
