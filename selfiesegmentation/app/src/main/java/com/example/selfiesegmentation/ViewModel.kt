@@ -9,6 +9,8 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.util.Log
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -109,14 +111,8 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     ).toMutableList()
     // Function that generates the final list with the dynamic path
     fun getImageListWithDynamicPath(imagelo: ImageLoader): MutableList<String> {
-        // Initialize a mutable list based on the static list
         val list = staticImageList.toMutableList()
-
-        // Add the dynamic path from imagelo.getImagePath("hey") if it’s available
-//        imagelo.getImagePath("stick").let {it->
-          //  list.add(0, it) // Add at the beginning, or adjust as needed
             list.add(0,imagelo.getImagePath("stick"))
-        //}
         return list
     }
 
@@ -161,8 +157,6 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
     fun cropBitmap(originalBitmap: Bitmap, left: Int, top: Int, width: Int, height: Int): Bitmap {
         return Bitmap.createBitmap(originalBitmap, left, top, width, height)
     }
-
-
 
 
     fun scaleDownBitmap(original: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
@@ -225,7 +219,7 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         return newBitmap
 
     }
-    fun applySepiaFilter(bitmap: Bitmap): `Bitmap` {
+    fun applySepiaFilter(bitmap: Bitmap): Bitmap {
         val startime = System.currentTimeMillis()
         val bmp = Bitmap.createBitmap(bitmap.width, bitmap.height, bitmap.config)
 
@@ -372,7 +366,6 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         val avgRed = if (count > 0) red / count else 0
         val avgGreen = if (count > 0) green / count else 0
         val avgBlue = if (count > 0) blue / count else 0
-
 
         val reds = 255 - avgRed
         val greens = 255 - avgGreen

@@ -7,31 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".backg_emoji">
 
-    <!-- Canvas Area -->
-
-    <!--    <ImageView-->
-<!--        android:id="@+id/canvas"-->
-<!--        android:layout_width="300dp"-->
-<!--        android:layout_height="300dp"-->
-<!--        android:layout_margin="16dp"-->
-<!--        android:background="@android:color/white"-->
-<!--        android:scaleType="centerCrop"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent" />-->
-
-<!--    &lt;!&ndash; Sticker Overlay Container &ndash;&gt;-->
-
-<!--    <FrameLayout-->
-<!--        android:id="@+id/stickerOverlay"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent">-->
-<!--    </FrameLayout>-->
-
-<!--    />-->
-
-    <!-- RecyclerView for Stickers -->
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/savefinal"
         android:layout_width="wrap_content"

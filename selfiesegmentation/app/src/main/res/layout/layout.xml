@@ -5,21 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-<!--    <Button-->
-<!--        android:id="@+id/emoji"-->
-<!--        android:layout_width="91dp"-->
-<!--        android:layout_height="40dp"-->
-<!--        android:layout_marginBottom="64dp"-->
-<!--        android:text="Emojis"-->
-<!--        android:visibility="invisible"-->
-<!--        app:layout_constraintBaseline_toBottomOf="@id/image"-->
-<!--        app:layout_constraintBottom_toBottomOf="@+id/textView"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.215"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/button2"-->
-<!--        app:layout_constraintVertical_bias="0.588" />-->
-
     <Button
         android:id="@+id/button3"
 
@@ -51,15 +36,14 @@
         android:id="@+id/imageview"
         android:layout_width="309dp"
         android:layout_height="181dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginBottom="32dp"
         android:contentDescription="/image_description"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.529"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/original"
+        app:layout_constraintVertical_bias="0.666" />
 
     <TextView
         android:id="@+id/textView"
@@ -134,5 +118,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/screen_background_light_transparent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/filters2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:clickable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.421"
+        app:layout_constraintStart_toEndOf="@+id/switch1"
+        app:layout_constraintTop_toTopOf="@+id/guideline"
+        app:srcCompat="@drawable/ar_stickers_24dp_e8eaed_fill0_wght400_grad0_opsz24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

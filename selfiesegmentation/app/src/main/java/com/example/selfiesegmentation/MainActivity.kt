@@ -13,7 +13,6 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,18 +20,16 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.collection.emptyLongSet
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.FileProvider
 import androidx.core.view.drawToBitmap
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStore
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.selfiesegmentation.databinding.LayoutBinding
 import java.io.File
-import java.io.Serializable
 
-class MainActivity : AppCompatActivity(),Serializable {
+class MainActivity : AppCompatActivity() {
     private companion object {
         const val CAMERA_PERMISSION_REQUEST_CODE = 100
     }
@@ -46,10 +43,8 @@ class MainActivity : AppCompatActivity(),Serializable {
     private lateinit var cameraLauncher: ActivityResultLauncher<Uri>
     private lateinit var galleryLauncher: ActivityResultLauncher<Intent>
     private lateinit var photoUri: Uri
-    private var l = ""
+    private var p1 : Bitmap ?= null
     private var loadedBitmap: Bitmap? = null
-    var bits : Bitmap ?=null
-    private lateinit var storedimg: Bitmap
     val sharedViewModel: SharedViewModel by viewModels {
         ViewModelProvider.AndroidViewModelFactory.getInstance(application)
     }
@@ -82,11 +77,12 @@ class MainActivity : AppCompatActivity(),Serializable {
         super.onCreate(savedInstanceState)
         initializeLaunchers()
 
+        // Simulated image processing
 
           binding.original.setImageBitmap(InitialHolder.bitmap)
             binding.button1.setOnClickListener {
                 showImageSourceDialog()
-        }
+            }
         binding.saver.setOnClickListener{
             imagelo.saveImageToGallery(sharedViewModel.cropBitmap(sharedViewModel.stickermap.value!!,sharedViewModel.boxs.left,sharedViewModel.boxs.top,sharedViewModel.boxs.width(),sharedViewModel.boxs.height()),this,"image-${System.currentTimeMillis()/100}")
             imagelo.saveBitmapAsPNG(sharedViewModel.cropBitmap(sharedViewModel.stickermap.value!!,sharedViewModel.boxs.left,sharedViewModel.boxs.top,sharedViewModel.boxs.width(),sharedViewModel.boxs.height()),"stick")
@@ -109,6 +105,8 @@ class MainActivity : AppCompatActivity(),Serializable {
             if(f) {
                 loadedBitmap?.let {
                     sharedViewModel.selfie_segmentation(it)
+                    p1 = binding.imageview.drawToBitmap()
+                    //loadedBitmap = sharedViewModel.stickermap.value
                 }
 
 // Observe stickermap to save and retrieve when ready
@@ -122,10 +120,39 @@ class MainActivity : AppCompatActivity(),Serializable {
                 binding.saver.visibility = View.VISIBLE
             }
         }
+        binding.filters2.setOnClickListener {
+            val filterOptions = arrayOf("Original", "Grayscale", "Sepia", "Blur", "Vignette", "High Contrast", "Bright", "Warm")
+
+            // Capture current image state as original when button is clicked
+            val capturedOriginal = p1!!
+
+            AlertDialog.Builder(this)
+                .setTitle("Choose Filter")
+                .setItems(filterOptions) { dialog, which ->
+                    // Always use capturedOriginal as source for each filter
+                    val filteredBitmap = when (which) {
+                        0 -> p1
+                        1 -> Filters.applyGrayscale(capturedOriginal)
+                        2 -> Filters.applySepia(capturedOriginal)
+                        3 -> Filters.applyBlur(capturedOriginal, 10f)
+                        4 -> Filters.applyVignette(capturedOriginal)
+                        5 -> Filters.applyContrast(capturedOriginal, 0.5f)
+                        6 -> Filters.applyBrightness(capturedOriginal, 30f)
+                        7 -> Filters.applyTint(capturedOriginal, 0xFFFF9800.toInt(), 0.2f)
+                        else -> capturedOriginal
+                    }
+
+                    binding.imageview.setImageBitmap(filteredBitmap)
+                    Toast.makeText(this, "${filterOptions[which]} filter applied!", Toast.LENGTH_SHORT).show()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
+
         binding.switch1.setOnClickListener{
-            bits = getBitmapFromView(binding.imageview)
-            sharedViewModel.updateBitmap(bits)
-            BitmapHolder.bitmap = sharedViewModel.bitmap.value
+//            bits = getBitmapFromView(binding.imageview)
+//            sharedViewModel.updateBitmap(bits)
+//            BitmapHolder.bitmap = sharedViewModel.bitmap.value
             val intent = Intent(this, backg_emoji::class.java)
             startActivity(intent)
         }
@@ -197,6 +224,7 @@ class MainActivity : AppCompatActivity(),Serializable {
                 binding.imageview.setImageBitmap(scaledBitmap)
                // savebits(scaledBitmap)
                 loadedBitmap = scaledBitmap
+                p1 = scaledBitmap
                 binding.original.setImageBitmap(loadedBitmap)
                 InitialHolder.bitmap = scaledBitmap
             }
@@ -213,6 +241,7 @@ class MainActivity : AppCompatActivity(),Serializable {
               //  savebits(scaledBitmap)
                 loadedBitmap = scaledBitmap
                 binding.original.setImageBitmap(loadedBitmap)
+                p1 = scaledBitmap
                 InitialHolder.bitmap = scaledBitmap
             }
         }

@@ -63,7 +63,6 @@ class ZoomableImageView(context: Context, attrs: AttributeSet?) : AppCompatImage
             }
 
             override fun onLongPress(e: MotionEvent) {
-                // Remove the view on long press
               val builder : AlertDialog.Builder = AlertDialog.Builder(context)
                 builder
                     .setMessage("Are you sure you want to delete this image?")
