@@ -1,6 +1,7 @@
 package com.example.selfiesegmentation
 
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -24,12 +25,12 @@ class backg_emoji : AppCompatActivity() {
     private var selectedBackgroundColor: Int = Color.WHITE
     private var imageCounter = 0
     private var l : String= ""
+    private var its : Bitmap ?=null
 
     fun copyImageLocation(s: String) : String {
         l = s
        return l
     }
-
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +42,40 @@ class backg_emoji : AppCompatActivity() {
         setupRecyclerView()
         setupBackgroundOptions()
         setupSave()
+        setUpFilter()
+    }
+    private fun setUpFilter() {
+        binding.FILTERS.setOnClickListener {
+            // Filter options
+            val filterOptions = arrayOf("Original", "Grayscale", "Sepia", "Blur", "Vignette", "High Contrast", "Bright", "Warm")
+            // Capture the current state of the entire canvas and overlay
+            val capturedBitmap = binding.canvas.getBitmapFromView()
+            // Show filter selection dialog
+            AlertDialog.Builder(this)
+                .setTitle("Choose Filter")
+                .setItems(filterOptions) { _, which ->
+                    val filteredBitmap = when (which) {
+                        0 -> its // Original
+                        1 -> Filters.applyGrayscale(capturedBitmap) // Grayscale
+                        2 -> Filters.applySepia(capturedBitmap) // Sepia
+                        3 -> Filters.applyBlur(capturedBitmap, 10f) // Blur
+                        4 -> Filters.applyVignette(capturedBitmap) // Vignette
+                        5 -> Filters.applyContrast(capturedBitmap, 0.5f) // High Contrast
+                        6 -> Filters.applyBrightness(capturedBitmap, 30f) // Bright
+                        7 -> Filters.applyTint(capturedBitmap, 0xFFFF9800.toInt(), 0.2f) // Warm
+                        else -> capturedBitmap
+                    }
+
+                    // Update the canvas with the filtered image
+                    binding.canvas.background = null // Clear background
+                    binding.stickerOverlay.setImageBitmap(filteredBitmap) // Apply filtered image
+                    its = filteredBitmap
+
+                    Toast.makeText(this, "${filterOptions[which]} filter applied!", Toast.LENGTH_SHORT).show()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -58,7 +93,6 @@ class backg_emoji : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        val imageList = sharedViewModel.staticImageList
         val recyclerView = binding.recyclerView
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         recyclerView.layoutManager = layoutManager
@@ -96,6 +130,7 @@ class backg_emoji : AppCompatActivity() {
                 newImageView.setImageBitmap(bitmap)
 
                 binding.canvas.addView(newImageView)
+                its = binding.canvas.drawToBitmap()
                 binding.stickerOverlay.requestLayout()
             }
 
@@ -145,6 +180,7 @@ if(!fl) {
     }.show()
 }
             fl = true
+
         }
     }
 
@@ -156,9 +192,11 @@ if(!fl) {
         if (selectedImage != null) {
             binding.canvas.background = null // Clear color background
             binding.stickerOverlay.setImageBitmap(selectedImage)
+            its = binding.canvas.drawToBitmap()
         } else {
             showToast("Failed to load background image")
         }
+
     }
 
     private fun showColorPicker() {
@@ -170,6 +208,7 @@ if(!fl) {
             .setItems(colors) { _, which ->
                 selectedBackgroundColor = colorval[which]
                 binding.canvas.setBackgroundColor(selectedBackgroundColor)
+                its = binding.canvas.drawToBitmap()
             }.show()
 
 
@@ -180,6 +219,11 @@ if(!fl) {
     }
 
 
+    fun View.getBitmapFromView(): Bitmap {
+        val bitmap = Bitmap.createBitmap(this.measuredWidth, this.measuredHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        this.draw(canvas)
+        return bitmap}
     }
 
 
