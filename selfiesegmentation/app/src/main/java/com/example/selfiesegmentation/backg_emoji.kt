@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -31,6 +30,7 @@ class backg_emoji : AppCompatActivity() {
     private var its : Bitmap ?=null
     private var c = 0
 
+
     fun copyImageLocation(s: String) : String {
         l = s
        return l
@@ -48,35 +48,91 @@ class backg_emoji : AppCompatActivity() {
         setupSave()
         setUpFilter()
     }
+    private val appliedFilters = mutableListOf<(Bitmap) -> Bitmap>()
+    private var originalBitmap: Bitmap? = null
+    private var currentBitmap: Bitmap? = null
+
     private fun setUpFilter() {
         binding.FILTERS.setOnClickListener {
             // Filter options
             val filterOptions = arrayOf("Original", "Grayscale", "Sepia", "Blur", "Vignette", "High Contrast", "Bright", "Warm")
+
             // Capture the current state of the entire canvas and overlay
             val capturedBitmap = binding.canvas.getBitmapFromView()
+
+            // If this is the first time, set the original bitmap
+            if (originalBitmap == null) {
+                originalBitmap = capturedBitmap
+                currentBitmap = capturedBitmap
+            }
+
             // Show filter selection dialog
             AlertDialog.Builder(this)
                 .setTitle("Choose Filter")
                 .setItems(filterOptions) { _, which ->
-                    val filteredBitmap = when (which) {
-                        0 -> its // Original
-                        1 -> Filters.applyGrayscale(capturedBitmap) // Grayscale
-                        2 -> Filters.applySepia(capturedBitmap) // Sepia
-                        3 -> Filters.applyBlur(capturedBitmap, 10f) // Blur
-                        4 -> Filters.applyVignette(capturedBitmap) // Vignette
-                        5 -> Filters.applyContrast(capturedBitmap, 0.5f) // High Contrast
-                        6 -> Filters.applyBrightness(capturedBitmap, 30f) // Bright
-                        7 -> Filters.applyTint(capturedBitmap, 0xFFFF9800.toInt(), 0.2f) // Warm
-                        else -> capturedBitmap
+                    when (which) {
+                        0 -> {
+                            // Reset to original
+                            appliedFilters.clear()
+                            currentBitmap = originalBitmap
+                            binding.stickerOverlay.setImageBitmap(currentBitmap)
+                            removeAllDynamicImageViews()
+                            Toast.makeText(this, "Filters reset", Toast.LENGTH_SHORT).show()
+                        }
+                        else -> {
+                            val filterToApply: (Bitmap) -> Bitmap = when (which) {
+                                1 -> { bitmap -> Filters.applyGrayscale(bitmap) } // Grayscale
+                                2 -> { bitmap -> Filters.applySepia(bitmap) } // Sepia
+                                3 -> { bitmap -> Filters.applyBlur(bitmap, 10f) } // Blur
+                                4 -> { bitmap -> Filters.applyVignette(bitmap) } // Vignette
+                                5 -> { bitmap -> Filters.applyContrast(bitmap, 0.5f) } // High Contrast
+                                6 -> { bitmap -> Filters.applyBrightness(bitmap, 30f) } // Bright
+                                7 -> { bitmap -> Filters.applyTint(bitmap, 0xFFFF9800.toInt(), 0.2f) } // Warm
+                                else -> { bitmap -> bitmap }
+                            }
+
+                            // Limit to 3 unique filters
+                            if (appliedFilters.size >= 3) {
+                                Toast.makeText(this, "Maximum filter limit reached", Toast.LENGTH_SHORT).show()
+                                return@setItems
+                            }
+
+                            // Prevent adding the same filter twice
+                            if (appliedFilters.none { it.toString() == filterToApply.toString() }) {
+                                appliedFilters.add(filterToApply)
+
+                                // Apply all filters to the original bitmap
+                                currentBitmap = stackFilters(
+                                    originalBitmap!!,
+                                    *appliedFilters.toTypedArray()
+                                )
+
+                                // Update the UI
+                                binding.stickerOverlay.setImageBitmap(currentBitmap)
+                                removeAllDynamicImageViews()
+
+                                // Show toast with applied filters
+                                val appliedFilterNames = appliedFilters.mapIndexed { index, _ ->
+                                    filterOptions[index + 1]
+                                }.joinToString(", ")
+
+                                Toast.makeText(
+                                    this,
+                                    "Filters applied: $appliedFilterNames",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
                     }
-                    binding.stickerOverlay.setImageBitmap(filteredBitmap)// Apply filtered image
-                    removeAllDynamicImageViews()
-                    its = filteredBitmap
-                    Toast.makeText(this, "${filterOptions[which]} filter applied!", Toast.LENGTH_SHORT).show()
                 }
                 .setNegativeButton("Cancel", null)
                 .show()
         }
+    }
+
+    // Utility function to stack filters
+    fun stackFilters(original: Bitmap, vararg filters: (Bitmap) -> Bitmap): Bitmap {
+        return filters.fold(original) { bitmap, filter -> filter(bitmap) }
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -110,13 +166,11 @@ class backg_emoji : AppCompatActivity() {
             fun addNewZoomableView(bitmap: Bitmap) {
                 val newImageView = ZoomableImageView(this, null).apply {
                     id = View.generateViewId()
-
                     tag = "image_${++imageCounter}"
                     isClickable = true
                     isLongClickable = true
                     Log.d("ZoomableView", "Creating new view with tag: $tag")
                 }
-
                 val lp = ConstraintLayout.LayoutParams(
                     ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
                     ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
@@ -132,8 +186,9 @@ class backg_emoji : AppCompatActivity() {
 
                 binding.canvas.addView(newImageView)
                 c++
-                its = binding.canvas.drawToBitmap()
+
                 binding.stickerOverlay.requestLayout()
+                its = binding.canvas.drawToBitmap()
             }
 
                 if (l != "") {
@@ -159,7 +214,6 @@ class backg_emoji : AppCompatActivity() {
                 }
             }
         }
-
     fun removeAllDynamicImageViews() {
         // Collect views to remove
         val viewsToRemove = binding.canvas.children
@@ -172,8 +226,6 @@ class backg_emoji : AppCompatActivity() {
             Log.d("RemoveView", "Removed view with tag: ${view.tag}")
         }
     }
-
-
     var fl = false
     //var imageList = sharedViewModel.staticImageList
     private fun setupBackgroundOptions() {
@@ -198,8 +250,6 @@ if(!fl) {
 
         }
     }
-
-
 
     private fun selectImageBackg() {
         // Simulate picking an image (modify with real implementation if needed)

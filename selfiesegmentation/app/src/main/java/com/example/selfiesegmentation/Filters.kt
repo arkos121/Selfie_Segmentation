@@ -152,7 +152,4 @@ object Filters {
         return result
     }
 
-    fun stackFilters(original: Bitmap, vararg filters: (Bitmap) -> Bitmap): Bitmap {
-        return filters.fold(original) { bitmap, filter -> filter(bitmap) }
-    }
 }

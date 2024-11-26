@@ -33,9 +33,6 @@ class MainActivity : AppCompatActivity() {
     private companion object {
         const val CAMERA_PERMISSION_REQUEST_CODE = 100
     }
-    object BitmapHolder {
-        var bitmap: Bitmap? = null
-    }
 
     object InitialHolder{
         var bitmap : Bitmap ?= null
@@ -48,7 +45,6 @@ class MainActivity : AppCompatActivity() {
     val sharedViewModel: SharedViewModel by viewModels {
         ViewModelProvider.AndroidViewModelFactory.getInstance(application)
     }
-//    private val sharedViewModel: SharedViewModel by viewModels()
     private lateinit var binding: LayoutBinding
     private val imagelo: ImageLoader = ImageLoader(this)
     private fun showToast(s: String) {
@@ -238,7 +234,6 @@ class MainActivity : AppCompatActivity() {
                 val originalBitmap = BitmapFactory.decodeStream(contentResolver.openInputStream(imageUri!!))
                 val scaledBitmap = sharedViewModel.scaleDownBitmap(originalBitmap, 800, 800) // Scale down to 800x800 max
                 binding.imageview.setImageBitmap(scaledBitmap)
-              //  savebits(scaledBitmap)
                 loadedBitmap = scaledBitmap
                 binding.original.setImageBitmap(loadedBitmap)
                 p1 = scaledBitmap
@@ -248,11 +243,5 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun getBitmapFromView(view: View): Bitmap {
-        val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        view.draw(canvas) // Draw the view into the canvas
-        return bitmap
-    }
 
 }
