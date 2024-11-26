@@ -7,6 +7,8 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
@@ -15,6 +17,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.selfiesegmentation.databinding.ActivityBackgEmojiBinding
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.children
 import androidx.core.view.drawToBitmap
 
 class backg_emoji : AppCompatActivity() {
@@ -26,6 +29,7 @@ class backg_emoji : AppCompatActivity() {
     private var imageCounter = 0
     private var l : String= ""
     private var its : Bitmap ?=null
+    private var c = 0
 
     fun copyImageLocation(s: String) : String {
         l = s
@@ -65,12 +69,9 @@ class backg_emoji : AppCompatActivity() {
                         7 -> Filters.applyTint(capturedBitmap, 0xFFFF9800.toInt(), 0.2f) // Warm
                         else -> capturedBitmap
                     }
-
-                    // Update the canvas with the filtered image
-                    binding.canvas.background = null // Clear background
-                    binding.stickerOverlay.setImageBitmap(filteredBitmap) // Apply filtered image
+                    binding.stickerOverlay.setImageBitmap(filteredBitmap)// Apply filtered image
+                    removeAllDynamicImageViews()
                     its = filteredBitmap
-
                     Toast.makeText(this, "${filterOptions[which]} filter applied!", Toast.LENGTH_SHORT).show()
                 }
                 .setNegativeButton("Cancel", null)
@@ -130,6 +131,7 @@ class backg_emoji : AppCompatActivity() {
                 newImageView.setImageBitmap(bitmap)
 
                 binding.canvas.addView(newImageView)
+                c++
                 its = binding.canvas.drawToBitmap()
                 binding.stickerOverlay.requestLayout()
             }
@@ -158,8 +160,21 @@ class backg_emoji : AppCompatActivity() {
             }
         }
 
+    fun removeAllDynamicImageViews() {
+        // Collect views to remove
+        val viewsToRemove = binding.canvas.children
+            .filter { it is ImageView && it.tag?.toString()?.startsWith("image_") == true }
+            .toList()
 
-var fl = false
+        // Remove collected views
+        viewsToRemove.forEach { view ->
+            binding.canvas.removeView(view)
+            Log.d("RemoveView", "Removed view with tag: ${view.tag}")
+        }
+    }
+
+
+    var fl = false
     //var imageList = sharedViewModel.staticImageList
     private fun setupBackgroundOptions() {
         binding.changeBackgroundButton.setOnClickListener {
@@ -210,8 +225,6 @@ if(!fl) {
                 binding.canvas.setBackgroundColor(selectedBackgroundColor)
                 its = binding.canvas.drawToBitmap()
             }.show()
-
-
     }
 
     private fun showToast(msg: String) {
