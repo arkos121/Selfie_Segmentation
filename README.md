@@ -19,7 +19,11 @@ This Android application leverages **Google's ML Kit** to provide advanced **Sel
 ## 🚀 Technologies Used
 - **Kotlin** 🟣
 - **ML Kit (Selfie Segmentation, Object Detection)** 🤖
-- **Android Jetpack (ViewModel, LiveData, etc.)** 🔧
+- **Android Jetpack (ViewModel, LiveData
+
+https://github.com/user-attachments/assets/45c682c1-39de-42e1-b97c-349aa261612e
+
+, etc.)** 🔧
 - **Canvas & Bitmap Processing** 🎨
 - **Gesture Detection (Multi-touch)** ✋
 - **Glide (for image loading)** 📷
